@@ -11,3 +11,6 @@
 *.lai
 *.la
 *.a
+
+oldstuff/
+suspect2.tar.gz
