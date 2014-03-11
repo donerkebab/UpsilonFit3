@@ -17,3 +17,6 @@ It has three main parts:
 
 
 SuSpect is written by Abdelhak Djouadi, Jean-Loic Kneur, and Gilbert Moultaka: [website](http://www.coulomb.univ-montp2.fr/perso/jean-loic.kneur/Suspect/), [arXiv:hep-ph/0211331](http://arxiv.org/abs/hep-ph/0211331).
+
+
+Acknowledgments: Mike Saelim would like to thank Curran Muhlberger for his expert advice.
