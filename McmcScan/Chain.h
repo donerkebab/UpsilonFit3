@@ -22,6 +22,8 @@
  *   rule that the system can only depend on the last point of the chain.
  * * Copy constructor is not supported because a copy of the chain would flush
  *   to the same output file.
+ * * Flush() implementation may be improved, especially with regards to the
+ *   output format.
  * 
  * Created on March 12, 2014, 5:11 AM
  */

@@ -4,7 +4,9 @@
  * 
  * Represents a point in the parameter space.  Also stores the values of 
  * measurements at the point, as well as the likelihood of the point. Parameters
- * and measurements are stored as pointers to GSL vectors, which the Point owns. 
+ * and measurements are stored as pointers to GSL vectors, which the Point owns.
+ * Parameters are meant to be stored here as their real-world values, and will
+ * have to be converted into the right form for the MCMC algorithm. 
  * 
  * Immutable.  The constructor makes a defensive copy of the GSL vectors, and
  * accessor methods return const GSL vectors.  The copy constructor does a deep 

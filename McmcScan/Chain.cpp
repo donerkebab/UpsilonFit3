@@ -10,6 +10,7 @@
 #include <string>
 
 #include "Chain.h"
+#include "Point.h"
 
 namespace McmcScan {
 
@@ -50,6 +51,10 @@ namespace McmcScan {
         return buffer_.size() + num_points_flushed_;
     }
     
+    std::shared_ptr<Point> Chain::getLastPoint() const {
+        return buffer_.back();
+    }
+    
     void Chain::Append(std::shared_ptr<Point> const point) {
         if ( point.get() == nullptr ) {
             throw std::invalid_argument("null point appended");
@@ -63,7 +68,33 @@ namespace McmcScan {
     }
     
     void Chain::Flush() {
-        //
+        FILE* output_file = fopen(filename_.c_str(), "a");
+        if ( output_file != nullptr ) {
+            while ( buffer_.size() > 1 ) {
+                std::shared_ptr<Point> point = buffer_.front();
+                
+                gsl_vector const* parameters = point->getParameters();
+                for ( int i = 0; i < parameters->size; ++i ) {
+                    fprintf(output_file, "%- 9.8E  ", 
+                            gsl_vector_get(parameters, i));
+                }
+                fprintf(output_file, "\n");
+                
+                gsl_vector const* measurements = point->getMeasurements();
+                for ( int i = 0; i < measurements->size; ++i) {
+                    fprintf(output_file, "%- 9.8E  ", 
+                            gsl_vector_get(measurements, i));
+                }
+                fprintf(output_file, "\n");
+                
+                fprintf(output_file, "%- 9.8E\n", point->getLikelihood());
+                fprintf(output_file, "\n");
+                
+                buffer_.pop();
+            }
+            
+            fclose(output_file);
+        }
     }
     
     
