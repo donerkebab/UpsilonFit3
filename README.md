@@ -5,6 +5,8 @@ Markov chain Monte Carlo scan of the pMSSM parameter space, in order to evaluate
 
 UpsilonFit3 is written by Mike Saelim, and is a complete rewrite of the UpsilonFit2 code he wrote for [arXiv:1201.5839](http://arxiv.org/abs/1201.5839).  It is written in C++, and requires the GNU Scientific Library (GSL) and SuSpect, a FORTRAN program written to calculate SUSY spectra.  It currently uses GSL version XXXX and SuSpect version XXXX.  
 
+The MCMC algorithm is Metropolis-Hastings with simulated annealing, based on the work in [arXiv:hep-ph/0602187](http://arxiv.org/abs/hep-ph/0602187).  Note that, while GSL has a simulated annealing package, we found it very limited.
+
 It has three main parts:
 
 1. The McmcScan package, which implements a general Markov chain Monte Carlo scan over a parameter space, given generic constraints.  Class McmcScan is abstract, and requires a subclass to implement key functions.
@@ -16,7 +18,12 @@ It has three main parts:
 
 
 
+
 SuSpect is written by Abdelhak Djouadi, Jean-Loic Kneur, and Gilbert Moultaka: [website](http://www.coulomb.univ-montp2.fr/perso/jean-loic.kneur/Suspect/), [arXiv:hep-ph/0211331](http://arxiv.org/abs/hep-ph/0211331).
 
 
-Acknowledgments: Mike Saelim would like to thank Curran Muhlberger for his expert advice.
+Acknowledgments
+---------------
+Mike Saelim would like to thank 
+* Maxim Perelstein for the original project and his guidance over the years, and
+* Curran Muhlberger for his expert development and programming advice.

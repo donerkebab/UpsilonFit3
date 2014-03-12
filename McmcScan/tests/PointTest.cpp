@@ -30,14 +30,18 @@ void PointTest::setUp() {
 }
 
 void PointTest::tearDown() {
-    // Nothing I can do.  The memory may or may not already be freed, but
-    // because of how GSL vectors are handled, there is no way for me to know
-    // and no error-safe way for me to try.
+    gsl_vector_free(parameters_);
+    gsl_vector_free(measurements_);
 }
 
 void PointTest::testPoint1() {
-    CPPUNIT_ASSERT_NO_THROW(McmcScan::Point point(parameters_, measurements_, 
+    CPPUNIT_ASSERT_NO_THROW(McmcScan::Point point1(parameters_, measurements_, 
             likelihood_));
+    
+    // Test for defensive copy
+    McmcScan::Point point2(parameters_, measurements_, likelihood_);
+    gsl_vector_set(parameters_, 0, 55.);
+    CPPUNIT_ASSERT(gsl_vector_get(point2.getParameters(), 0) == 0.);
 }
 
 void PointTest::testPoint2() {
@@ -61,18 +65,18 @@ void PointTest::testPoint5() {
 }
 
 void PointTest::testPoint6() {
-    McmcScan::Point point1(parameters_, measurements_, likelihood_);
-    McmcScan::Point point2(point1);
+    McmcScan::Point* point1 = new McmcScan::Point(parameters_, measurements_, 
+            likelihood_);
+    McmcScan::Point point2(*point1);
 
-    CPPUNIT_ASSERT(gsl_vector_equal(point1.getParameters(), 
+    CPPUNIT_ASSERT(gsl_vector_equal(point1->getParameters(), 
             point2.getParameters()) == 1);
-    CPPUNIT_ASSERT(gsl_vector_equal(point1.getMeasurements(),
+    CPPUNIT_ASSERT(gsl_vector_equal(point1->getMeasurements(),
             point2.getMeasurements()) == 1);
-    CPPUNIT_ASSERT(point1.getLikelihood() == point2.getLikelihood());
-
+    CPPUNIT_ASSERT(point1->getLikelihood() == point2.getLikelihood());
+    
     // Test for deep copy
-    gsl_vector_set(parameters_, 0, 55.);
-    CPPUNIT_ASSERT(gsl_vector_get(point1.getParameters(), 0) == 55.);
+    delete point1;
     CPPUNIT_ASSERT(gsl_vector_get(point2.getParameters(), 0) == 0.);
 }
 
