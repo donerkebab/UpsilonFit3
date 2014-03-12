@@ -63,8 +63,10 @@ namespace McmcScan {
     }
     
     void Chain::Flush() {
-        
+        //
     }
+    
+    
     
     Chain::~Chain() {
         // Need to flush all of the Point objects from the chain, including the
