@@ -12,6 +12,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <itemPath>Chain.cpp</itemPath>
+      <itemPath>Chain.h</itemPath>
       <itemPath>Point.cpp</itemPath>
       <itemPath>Point.h</itemPath>
     </logicalFolder>
@@ -53,6 +55,10 @@
         <archiverTool>
         </archiverTool>
       </compileType>
+      <item path="Chain.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Chain.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Point.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Point.h" ex="false" tool="3" flavor2="0">
@@ -100,6 +106,10 @@
         <archiverTool>
         </archiverTool>
       </compileType>
+      <item path="Chain.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Chain.h" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Point.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Point.h" ex="false" tool="3" flavor2="0">

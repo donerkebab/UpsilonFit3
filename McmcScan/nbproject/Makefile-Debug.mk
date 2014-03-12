@@ -35,6 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/Chain.o \
 	${OBJECTDIR}/Point.o
 
 # Test Directory
@@ -70,6 +71,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmcmcscan.a: ${OBJECTFILES}
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmcmcscan.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmcmcscan.a
 
+${OBJECTDIR}/Chain.o: Chain.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Chain.o Chain.cpp
+
 ${OBJECTDIR}/Point.o: Point.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
@@ -96,6 +102,19 @@ ${TESTDIR}/tests/PointTestRunner.o: tests/PointTestRunner.cpp
 	${RM} "$@.d"
 	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PointTestRunner.o tests/PointTestRunner.cpp
 
+
+${OBJECTDIR}/Chain_nomain.o: ${OBJECTDIR}/Chain.o Chain.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/Chain.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Chain_nomain.o Chain.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/Chain.o ${OBJECTDIR}/Chain_nomain.o;\
+	fi
 
 ${OBJECTDIR}/Point_nomain.o: ${OBJECTDIR}/Point.o Point.cpp 
 	${MKDIR} -p ${OBJECTDIR}

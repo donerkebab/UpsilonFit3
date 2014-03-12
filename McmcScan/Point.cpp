@@ -14,10 +14,10 @@ namespace McmcScan {
     Point::Point(gsl_vector* const parameters, 
             gsl_vector* const measurements,
             double const likelihood) {
-        if (parameters == NULL) {
+        if (parameters == nullptr) {
             throw std::invalid_argument("input parameters is null");
         }
-        if (measurements == NULL) {
+        if (measurements == nullptr) {
             throw std::invalid_argument("input measurements is null");
         }
         if (likelihood < 0) {
