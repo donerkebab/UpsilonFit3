@@ -6,6 +6,7 @@
  */
 
 #include <stdexcept>
+#include <gsl/gsl_vector.h>
 
 #include "Point.h"
 

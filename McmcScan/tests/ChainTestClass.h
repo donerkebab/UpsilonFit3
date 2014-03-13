@@ -29,9 +29,8 @@ private:
     void testChainInitFails();
     void testChainFill();
 
-    
-    
     std::string dummy_output_filename_;
+    double const d_ = 1E-5;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL())
 };
 
 #endif	/* CHAINTESTCLASS_H */

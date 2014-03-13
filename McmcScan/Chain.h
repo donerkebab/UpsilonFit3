@@ -19,11 +19,11 @@
  * 
  * Dev notes:
  * * I use a queue for the buffer, in order to internally mostly-enforce the
- *   rule that the system can only depend on the last point of the chain.
+ *   rule that the system can only depend on the last point of the chain.  It
+ *   also has the advantage of being based on deque, which can store elements in
+ *   discontinuous memory blocks to avoid resizing/reallocation issues.
  * * Copy constructor is not supported because a copy of the chain would flush
  *   to the same output file.
- * * Flush() implementation may be improved, especially with regards to the
- *   output format.
  * 
  * Created on March 12, 2014, 5:11 AM
  */

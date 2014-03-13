@@ -6,9 +6,12 @@
  */
 
 #include <cstdio>
+#include <memory>
 #include <stdexcept>
-#include "ChainTestClass.h"
+#include <string>
 #include "../Chain.h"
+
+#include "ChainTestClass.h"
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ChainTestClass);
@@ -93,35 +96,35 @@ void ChainTestClass::testChainFill() {
             == gsl_vector_get(params2, 1));
     
     // Check what has been output
-    FILE* read_output = std::fopen(dummy_output_filename_.c_str(), "r");
+    std::FILE* read_output = std::fopen(dummy_output_filename_.c_str(), "r");
     float read_buffer;
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params1, 0), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params1, 1), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas1, 0), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas1, 1), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas1, 2), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, like1, 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params2, 0), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params2, 1), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas2, 0), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas2, 1), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas2, 2), 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, like2, 1E-5);
-    fscanf(read_output, "%f", &read_buffer);
-    CPPUNIT_ASSERT(feof(read_output) != 0);
-    fclose(read_output);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params1, 0), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params1, 1), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas1, 0), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas1, 1), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas1, 2), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, like1, d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params2, 0), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(params2, 1), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas2, 0), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas2, 1), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, gsl_vector_get(meas2, 2), d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(read_buffer, like2, d_);
+    std::fscanf(read_output, "%f", &read_buffer);
+    CPPUNIT_ASSERT(std::feof(read_output) != 0);
+    std::fclose(read_output);
     
     // Try flushing at this point: nothing should happen
     chain.Flush();

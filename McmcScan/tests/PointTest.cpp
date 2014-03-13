@@ -5,8 +5,11 @@
  * Created on Mar 10, 2014, 10:21:36 AM
  */
 
-#include "PointTest.h"
+#include <stdexcept>
+#include <gsl/gsl_vector.h>
 #include "../Point.h"
+
+#include "PointTest.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PointTest);
 
@@ -42,7 +45,7 @@ void PointTest::testPoint1() {
     McmcScan::Point point2(parameters_, measurements_, likelihood_);
     gsl_vector_set(parameters_, 0, 55.);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(gsl_vector_get(point2.getParameters(), 0), 0.,
-            1E-5);
+            d_);
 }
 
 void PointTest::testPoint2() {
@@ -51,13 +54,13 @@ void PointTest::testPoint2() {
 }
 
 void PointTest::testPoint3() {
-    CPPUNIT_ASSERT_THROW(McmcScan::Point point(NULL, measurements_, 
+    CPPUNIT_ASSERT_THROW(McmcScan::Point point(nullptr, measurements_, 
             likelihood_), std::invalid_argument);
 }
 
 void PointTest::testPoint4() {
-    CPPUNIT_ASSERT_THROW(McmcScan::Point point(parameters_, NULL, likelihood_),
-            std::invalid_argument);
+    CPPUNIT_ASSERT_THROW(McmcScan::Point point(parameters_, nullptr, 
+            likelihood_), std::invalid_argument);
 }
 
 void PointTest::testPoint5() {
@@ -75,17 +78,17 @@ void PointTest::testPoint6() {
     CPPUNIT_ASSERT(gsl_vector_equal(point1->getMeasurements(),
             point2.getMeasurements()) == 1);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(point1->getLikelihood(), 
-            point2.getLikelihood(), 1E-5);
+            point2.getLikelihood(), d_);
     
     // Test for deep copy
     delete point1;
     CPPUNIT_ASSERT_DOUBLES_EQUAL(gsl_vector_get(point2.getParameters(), 0),
-            0., 1E-5);
+            0., d_);
 }
 
 void PointTest::testGetLikelihood() {
     McmcScan::Point point(parameters_, measurements_, likelihood_);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(point.getLikelihood(), likelihood_, 1E-5);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(point.getLikelihood(), likelihood_, d_);
 }
 
 void PointTest::testGetMeasurements() {

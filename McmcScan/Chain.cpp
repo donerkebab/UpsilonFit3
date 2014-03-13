@@ -9,9 +9,9 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include "Point.h"
 
 #include "Chain.h"
-#include "Point.h"
 
 namespace McmcScan {
 
@@ -76,33 +76,33 @@ namespace McmcScan {
             return;
         }
         
-        FILE* output_file = fopen(filename_.c_str(), "a");
+        std::FILE* output_file = std::fopen(filename_.c_str(), "a");
         if ( output_file != nullptr ) {
             while ( buffer_.size() > 1 ) {
                 std::shared_ptr<McmcScan::Point> point = buffer_.front();
                 
                 gsl_vector const* parameters = point->getParameters();
                 for ( int i = 0; i < parameters->size; ++i ) {
-                    fprintf(output_file, "%- 9.8E  ", 
+                    std::fprintf(output_file, "%- 9.8E  ", 
                             gsl_vector_get(parameters, i));
                 }
-                fprintf(output_file, "\n");
+                std::fprintf(output_file, "\n");
                 
                 gsl_vector const* measurements = point->getMeasurements();
                 for ( int i = 0; i < measurements->size; ++i) {
-                    fprintf(output_file, "%- 9.8E  ", 
+                    std::fprintf(output_file, "%- 9.8E  ", 
                             gsl_vector_get(measurements, i));
                 }
-                fprintf(output_file, "\n");
+                std::fprintf(output_file, "\n");
                 
-                fprintf(output_file, "%- 9.8E\n", point->getLikelihood());
-                fprintf(output_file, "\n");
+                std::fprintf(output_file, "%- 9.8E\n", point->getLikelihood());
+                std::fprintf(output_file, "\n");
                 
                 buffer_.pop();
                 ++num_points_flushed_;
             }
             
-            fclose(output_file);
+            std::fclose(output_file);
         }
     }
     

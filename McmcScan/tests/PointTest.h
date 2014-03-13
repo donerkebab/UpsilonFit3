@@ -46,6 +46,8 @@ private:
     gsl_vector* parameters_;
     gsl_vector* measurements_;
     double likelihood_;
+    
+    double const d_ = 1E-5;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL
 };
 
 #endif	/* POINTTEST_H */
