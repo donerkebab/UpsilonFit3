@@ -43,6 +43,7 @@ TESTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}/tests
 
 # Test Files
 TESTFILES= \
+	${TESTDIR}/TestFiles/f2 \
 	${TESTDIR}/TestFiles/f1
 
 # C Compiler Flags
@@ -86,9 +87,25 @@ ${OBJECTDIR}/Point.o: Point.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/ChainTestClass.o ${TESTDIR}/tests/ChainTestRunner.o ${OBJECTFILES:%.o=%_nomain.o}
+	${MKDIR} -p ${TESTDIR}/TestFiles
+	${LINK.cc}   -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} `cppunit-config --libs`   
+
 ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/PointTest.o ${TESTDIR}/tests/PointTestRunner.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} `cppunit-config --libs`   
+
+
+${TESTDIR}/tests/ChainTestClass.o: tests/ChainTestClass.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/ChainTestClass.o tests/ChainTestClass.cpp
+
+
+${TESTDIR}/tests/ChainTestRunner.o: tests/ChainTestRunner.cpp 
+	${MKDIR} -p ${TESTDIR}/tests
+	${RM} "$@.d"
+	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/ChainTestRunner.o tests/ChainTestRunner.cpp
 
 
 ${TESTDIR}/tests/PointTest.o: tests/PointTest.cpp 
@@ -133,6 +150,7 @@ ${OBJECTDIR}/Point_nomain.o: ${OBJECTDIR}/Point.o Point.cpp
 .test-conf:
 	@if [ "${TEST}" = "" ]; \
 	then  \
+	    ${TESTDIR}/TestFiles/f2 || true; \
 	    ${TESTDIR}/TestFiles/f1 || true; \
 	else  \
 	    ./${TEST} || true; \

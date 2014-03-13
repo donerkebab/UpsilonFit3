@@ -5,6 +5,7 @@
  * Created on March 12, 2014, 5:11 AM
  */
 
+#include <cstdio>
 #include <memory>
 #include <queue>
 #include <string>
@@ -14,7 +15,7 @@
 
 namespace McmcScan {
 
-    Chain::Chain(std::shared_ptr<Point> const point,
+    Chain::Chain(std::shared_ptr<McmcScan::Point> const point,
             std::string const filename,
             unsigned int const buffer_size)
     : filename_(filename),
@@ -23,6 +24,9 @@ namespace McmcScan {
     {
         if ( point.get() == nullptr ) {
             throw std::invalid_argument("null point used to initialize chain");
+        }
+        if ( filename == "" ) {
+            throw std::invalid_argument("invalid filename");
         }
         if ( buffer_size == 0 ) {
             throw std::invalid_argument("cannot have zero buffer size");
@@ -51,11 +55,11 @@ namespace McmcScan {
         return buffer_.size() + num_points_flushed_;
     }
     
-    std::shared_ptr<Point> Chain::getLastPoint() const {
+    std::shared_ptr<McmcScan::Point> Chain::getLastPoint() const {
         return buffer_.back();
     }
     
-    void Chain::Append(std::shared_ptr<Point> const point) {
+    void Chain::Append(std::shared_ptr<McmcScan::Point> const point) {
         if ( point.get() == nullptr ) {
             throw std::invalid_argument("null point appended");
         }
@@ -68,10 +72,14 @@ namespace McmcScan {
     }
     
     void Chain::Flush() {
+        if ( buffer_.size() == 1 ) {
+            return;
+        }
+        
         FILE* output_file = fopen(filename_.c_str(), "a");
         if ( output_file != nullptr ) {
             while ( buffer_.size() > 1 ) {
-                std::shared_ptr<Point> point = buffer_.front();
+                std::shared_ptr<McmcScan::Point> point = buffer_.front();
                 
                 gsl_vector const* parameters = point->getParameters();
                 for ( int i = 0; i < parameters->size; ++i ) {
@@ -91,6 +99,7 @@ namespace McmcScan {
                 fprintf(output_file, "\n");
                 
                 buffer_.pop();
+                ++num_points_flushed_;
             }
             
             fclose(output_file);
@@ -104,8 +113,8 @@ namespace McmcScan {
         // last one.  Save on coding complexity by adding a new dummy Point to 
         // the buffer, and then simply calling Flush().
         
-        buffer_.push(std::shared_ptr<Point>(new Point(gsl_vector_alloc(1),
-                gsl_vector_alloc(1), 0.) ) );
+        buffer_.push(std::shared_ptr<McmcScan::Point>(
+                new Point(gsl_vector_alloc(1), gsl_vector_alloc(1), 0.) ) );
         Flush();
     }
 

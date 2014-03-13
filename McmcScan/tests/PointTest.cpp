@@ -41,7 +41,8 @@ void PointTest::testPoint1() {
     // Test for defensive copy
     McmcScan::Point point2(parameters_, measurements_, likelihood_);
     gsl_vector_set(parameters_, 0, 55.);
-    CPPUNIT_ASSERT(gsl_vector_get(point2.getParameters(), 0) == 0.);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(gsl_vector_get(point2.getParameters(), 0), 0.,
+            1E-5);
 }
 
 void PointTest::testPoint2() {
@@ -73,16 +74,18 @@ void PointTest::testPoint6() {
             point2.getParameters()) == 1);
     CPPUNIT_ASSERT(gsl_vector_equal(point1->getMeasurements(),
             point2.getMeasurements()) == 1);
-    CPPUNIT_ASSERT(point1->getLikelihood() == point2.getLikelihood());
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(point1->getLikelihood(), 
+            point2.getLikelihood(), 1E-5);
     
     // Test for deep copy
     delete point1;
-    CPPUNIT_ASSERT(gsl_vector_get(point2.getParameters(), 0) == 0.);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(gsl_vector_get(point2.getParameters(), 0),
+            0., 1E-5);
 }
 
 void PointTest::testGetLikelihood() {
     McmcScan::Point point(parameters_, measurements_, likelihood_);
-    CPPUNIT_ASSERT(point.getLikelihood() == likelihood_);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(point.getLikelihood(), likelihood_, 1E-5);
 }
 
 void PointTest::testGetMeasurements() {

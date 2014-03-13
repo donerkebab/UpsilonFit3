@@ -5,7 +5,7 @@
  * Represents a Markov chain of Point objects in the parameter space.  The chain
  * has a fixed buffer size and is tied to a text output file.  When the number
  * of buffered points reaches the buffer size, the chain flushes all except the
- * last point into the output file.
+ * last point into the output file.  The user may also flush the chain manually.
  * 
  * Chain doesn't actually store the Point objects directly, but rather 
  * shared_ptr pointers to Point objects.  This is because, in normal McmcScan 
@@ -34,15 +34,15 @@
 #include <memory>
 #include <queue>
 #include <string>
+#include "Point.h"
 
 namespace McmcScan {
     
     class Chain {
     public:
-        Chain(std::shared_ptr<Point> const point,
+        Chain(std::shared_ptr<McmcScan::Point> const point,
                 std::string const filename,
                 unsigned int const buffer_size);
-        Chain(Chain const& orig) = delete;
         
         std::string getFilename() const;
         unsigned int getBufferSize() const;
@@ -50,15 +50,17 @@ namespace McmcScan {
         unsigned int getNumPointsFlushed() const;
         unsigned int getChainLength() const;
         
-        std::shared_ptr<Point> getLastPoint() const;
+        std::shared_ptr<McmcScan::Point> getLastPoint() const;
         
-        void Append(std::shared_ptr<Point> const point);
+        void Append(std::shared_ptr<McmcScan::Point> const point);
         void Flush();
         
         virtual ~Chain();
         
     private:
-        std::queue<std::shared_ptr<Point> > buffer_;
+        Chain(Chain const& orig);
+
+        std::queue<std::shared_ptr<McmcScan::Point> > buffer_;
         std::string const filename_;
         unsigned int const buffer_size_;
         unsigned int num_points_flushed_;
