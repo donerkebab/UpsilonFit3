@@ -9,8 +9,8 @@
  * Created on March 13, 2014, 4:19 AM
  */
 
-#ifndef CHAINFLUSHERROR_H
-#define	CHAINFLUSHERROR_H
+#ifndef MCMCSCAN_CHAINFLUSHERROR_H
+#define	MCMCSCAN_CHAINFLUSHERROR_H
 
 #include <stdexcept>
 
@@ -26,5 +26,5 @@ namespace McmcScan {
 }
 
 
-#endif	/* CHAINFLUSHERROR_H */
+#endif	/* MCMCSCAN_CHAINFLUSHERROR_H */
 

@@ -5,10 +5,11 @@
  * Created on March 9, 2014, 4:51 AM
  */
 
-#include <stdexcept>
-#include <gsl/gsl_vector.h>
-
 #include "Point.h"
+
+#include <stdexcept>
+
+#include <gsl/gsl_vector.h>
 
 namespace McmcScan {
 

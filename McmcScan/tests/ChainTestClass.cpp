@@ -5,13 +5,16 @@
  * Created on Mar 12, 2014, 3:49:33 PM
  */
 
+#include "ChainTestClass.h"
+
 #include <cstdio>
+
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include "../Chain.h"
 
-#include "ChainTestClass.h"
+#include "../Point.h"
+#include "../Chain.h"
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ChainTestClass);

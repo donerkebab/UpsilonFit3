@@ -5,17 +5,19 @@
  * Created on March 12, 2014, 5:11 AM
  */
 
+#include "Chain.h"
+
 #include <cstdio>
+
 #include <memory>
 #include <queue>
 #include <string>
+
 #include "Point.h"
 #include "ChainFlushError.h"
 
-#include "Chain.h"
-
 namespace McmcScan {
-
+    
     Chain::Chain(std::shared_ptr<McmcScan::Point> const point,
             std::string const filename,
             unsigned int const buffer_size)
@@ -36,7 +38,7 @@ namespace McmcScan {
         // Also check to see if there are any issues opening the output file
         std::FILE* output_file = std::fopen(filename_.c_str(), "a");
         if ( output_file == nullptr ) {
-            throw McmcScan::chain_flush_error;
+            throw McmcScan::ChainFlushError();
         } else {
             std::fclose(output_file);
         }
@@ -88,7 +90,7 @@ namespace McmcScan {
         
         std::FILE* output_file = std::fopen(filename_.c_str(), "a");
         if ( output_file == nullptr ) {
-            throw McmcScan::chain_flush_error;
+            throw McmcScan::ChainFlushError();
         } else {
             while ( buffer_.size() > 1 ) {
                 std::shared_ptr<McmcScan::Point> point = buffer_.front();

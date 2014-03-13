@@ -5,10 +5,11 @@
  * Created on Mar 12, 2014, 3:49:32 PM
  */
 
-#ifndef CHAINTESTCLASS_H
-#define	CHAINTESTCLASS_H
+#ifndef MCMCSCAN_CHAINTESTCLASS_H
+#define	MCMCSCAN_CHAINTESTCLASS_H
 
 #include <string>
+
 #include <cppunit/extensions/HelperMacros.h>
 
 class ChainTestClass : public CPPUNIT_NS::TestFixture {
@@ -30,8 +31,11 @@ private:
     void testChainFill();
 
     std::string dummy_output_filename_;
-    double const d_ = 1E-5;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL())
+
+    double const d_ = 1E-5;
+
 };
 
-#endif	/* CHAINTESTCLASS_H */
+
+#endif	/* MCMCSCAN_CHAINTESTCLASS_H */
 

@@ -28,8 +28,8 @@
  * Created on March 9, 2014, 4:51 AM
  */
 
-#ifndef POINT_H
-#define	POINT_H
+#ifndef MCMCSCAN_POINT_H
+#define	MCMCSCAN_POINT_H
 
 #include <gsl/gsl_vector.h>
 
@@ -56,5 +56,5 @@ namespace McmcScan {
 
 }
 
-#endif	/* POINT_H */
+#endif	/* MCMCSCAN_POINT_H */
 

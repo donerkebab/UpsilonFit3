@@ -8,7 +8,7 @@
  * last point into the output file.  The user may also flush the chain manually.
  * 
  * If there are problems opening the output file, either when the Chain is
- * constructed or during flushing, it throws McmcScan::chain_flush_error.  If
+ * constructed or during flushing, it throws a McmcScan::ChainFlushError.  If
  * this happens during construction, the Chain will fail to initialize.  If this
  * happens during flushing, the user can ignore it, in which case the buffer
  * will simply go unflushed until the next attempt.
@@ -34,12 +34,13 @@
  * Created on March 12, 2014, 5:11 AM
  */
 
-#ifndef CHAIN_H
-#define	CHAIN_H
+#ifndef MCMCSCAN_CHAIN_H
+#define	MCMCSCAN_CHAIN_H
 
 #include <memory>
 #include <queue>
 #include <string>
+
 #include "Point.h"
 #include "ChainFlushError.h"
 
@@ -63,7 +64,7 @@ namespace McmcScan {
         void Flush();
         
         virtual ~Chain();
-        
+
     private:
         Chain(Chain const& orig);
 
@@ -71,12 +72,9 @@ namespace McmcScan {
         std::string const filename_;
         unsigned int const buffer_size_;
         unsigned int num_points_flushed_;
-        
-        static McmcScan::ChainFlushError chain_flush_error;
     };
     
-    McmcScan::ChainFlushError chain_flush_error; 
 }
 
-#endif	/* CHAIN_H */
+#endif	/* MCMCSCAN_CHAIN_H */
 

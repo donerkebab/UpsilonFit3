@@ -5,11 +5,13 @@
  * Created on Mar 10, 2014, 10:21:36 AM
  */
 
-#include <stdexcept>
-#include <gsl/gsl_vector.h>
-#include "../Point.h"
-
 #include "PointTest.h"
+
+#include <stdexcept>
+
+#include <gsl/gsl_vector.h>
+
+#include "../Point.h"
 
 CPPUNIT_TEST_SUITE_REGISTRATION(PointTest);
 
