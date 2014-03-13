@@ -47,27 +47,37 @@ namespace McmcScan {
 
     }
 
-    std::string Chain::getFilename() const {
+    Chain::~Chain() {
+        // Need to flush all of the Point objects from the chain, including the
+        // last one.  Save on coding complexity by adding a new dummy Point to 
+        // the buffer, and then simply calling Flush().
+        
+        buffer_.push(std::shared_ptr<McmcScan::Point>(
+                new Point(gsl_vector_alloc(1), gsl_vector_alloc(1), 0.) ) );
+        Flush();
+    }
+
+    std::string Chain::filename() const {
         return filename_;
     }
     
-    unsigned int Chain::getBufferSize() const {
+    unsigned int Chain::buffer_size() const {
         return buffer_size_;
     }
     
-    unsigned int Chain::getNumPointsBuffered() const {
+    unsigned int Chain::num_points_buffered() const {
         return buffer_.size();
     }
     
-    unsigned int Chain::getNumPointsFlushed() const {
+    unsigned int Chain::num_points_flushed() const {
         return num_points_flushed_;
     }
     
-    unsigned int Chain::getChainLength() const {
+    unsigned int Chain::length() const {
         return buffer_.size() + num_points_flushed_;
     }
     
-    std::shared_ptr<McmcScan::Point> Chain::getLastPoint() const {
+    std::shared_ptr<McmcScan::Point> Chain::last_point() const {
         return buffer_.back();
     }
     
@@ -95,21 +105,21 @@ namespace McmcScan {
             while ( buffer_.size() > 1 ) {
                 std::shared_ptr<McmcScan::Point> point = buffer_.front();
                 
-                gsl_vector const* parameters = point->getParameters();
+                gsl_vector const* parameters = point->parameters();
                 for ( int i = 0; i < parameters->size; ++i ) {
                     std::fprintf(output_file, "%- 9.8E  ", 
                             gsl_vector_get(parameters, i));
                 }
                 std::fprintf(output_file, "\n");
                 
-                gsl_vector const* measurements = point->getMeasurements();
+                gsl_vector const* measurements = point->measurements();
                 for ( int i = 0; i < measurements->size; ++i) {
                     std::fprintf(output_file, "%- 9.8E  ", 
                             gsl_vector_get(measurements, i));
                 }
                 std::fprintf(output_file, "\n");
                 
-                std::fprintf(output_file, "%- 9.8E\n", point->getLikelihood());
+                std::fprintf(output_file, "%- 9.8E\n", point->likelihood());
                 std::fprintf(output_file, "\n");
                 
                 buffer_.pop();
@@ -118,18 +128,6 @@ namespace McmcScan {
             
             std::fclose(output_file);
         }
-    }
-    
-    
-    
-    Chain::~Chain() {
-        // Need to flush all of the Point objects from the chain, including the
-        // last one.  Save on coding complexity by adding a new dummy Point to 
-        // the buffer, and then simply calling Flush().
+    }   
         
-        buffer_.push(std::shared_ptr<McmcScan::Point>(
-                new Point(gsl_vector_alloc(1), gsl_vector_alloc(1), 0.) ) );
-        Flush();
-    }
-
 }

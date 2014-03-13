@@ -20,7 +20,7 @@
  * shared_ptr only frees the Point objects' memory when the last pointer is
  * flushed.
  * 
- * Terminology: "chain length" is considered to be the sum of the number of 
+ * Terminology: chain "length" is considered to be the sum of the number of 
  * currently buffered points and the number of points already flushed.
  * 
  * Dev notes:
@@ -51,20 +51,18 @@ namespace McmcScan {
         Chain(std::shared_ptr<McmcScan::Point> const point,
                 std::string const filename,
                 unsigned int const buffer_size);
+        virtual ~Chain();
         
-        std::string getFilename() const;
-        unsigned int getBufferSize() const;
-        unsigned int getNumPointsBuffered() const;
-        unsigned int getNumPointsFlushed() const;
-        unsigned int getChainLength() const;
-        
-        std::shared_ptr<McmcScan::Point> getLastPoint() const;
+        std::string filename() const;
+        unsigned int buffer_size() const;
+        unsigned int num_points_buffered() const;
+        unsigned int num_points_flushed() const;
+        unsigned int length() const;
+        std::shared_ptr<McmcScan::Point> last_point() const;
         
         void Append(std::shared_ptr<McmcScan::Point> const point);
         void Flush();
         
-        virtual ~Chain();
-
     private:
         Chain(Chain const& orig);
         void operator=(Chain const& orig);

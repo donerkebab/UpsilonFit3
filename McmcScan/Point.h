@@ -42,12 +42,11 @@ namespace McmcScan {
         Point(gsl_vector* const parameters,
                 gsl_vector* const measurements,
                 double const likelihood);
-
-        gsl_vector const* getParameters() const;
-        gsl_vector const* getMeasurements() const;
-        double getLikelihood() const;
-
         virtual ~Point();
+
+        gsl_vector const* parameters() const;
+        gsl_vector const* measurements() const;
+        double likelihood() const;
 
     private:
         Point(Point const& orig);

@@ -20,7 +20,8 @@
 CPPUNIT_TEST_SUITE_REGISTRATION(ChainTestClass);
 
 ChainTestClass::ChainTestClass()
-: d_(1E-5)
+: dummy_output_filename_("dummy_output_file.dat"),
+        d_(1E-5)
 {
 }
 
@@ -28,7 +29,6 @@ ChainTestClass::~ChainTestClass() {
 }
 
 void ChainTestClass::setUp() {
-    dummy_output_filename_ = "dummy_output_file.dat";
 }
 
 void ChainTestClass::tearDown() {
@@ -62,12 +62,12 @@ void ChainTestClass::testChainFill() {
 
     McmcScan::Chain chain(point1, dummy_output_filename_, buffer_size);
 
-    CPPUNIT_ASSERT(chain.getFilename() == dummy_output_filename_);
-    CPPUNIT_ASSERT(chain.getBufferSize() == buffer_size);
-    CPPUNIT_ASSERT(chain.getNumPointsBuffered() == 1);
-    CPPUNIT_ASSERT(chain.getNumPointsFlushed() == 0);
-    CPPUNIT_ASSERT(chain.getChainLength() == 1);
-    CPPUNIT_ASSERT(chain.getLastPoint() == point1);
+    CPPUNIT_ASSERT(chain.filename() == dummy_output_filename_);
+    CPPUNIT_ASSERT(chain.buffer_size() == buffer_size);
+    CPPUNIT_ASSERT(chain.num_points_buffered() == 1);
+    CPPUNIT_ASSERT(chain.num_points_flushed() == 0);
+    CPPUNIT_ASSERT(chain.length() == 1);
+    CPPUNIT_ASSERT(chain.last_point() == point1);
     
     // Add the second point
     gsl_vector* params2 = gsl_vector_alloc(2);
@@ -82,22 +82,22 @@ void ChainTestClass::testChainFill() {
             new McmcScan::Point(params2, meas2, like2));
     chain.Append(point2);
     
-    CPPUNIT_ASSERT(chain.getNumPointsBuffered() == 2);
-    CPPUNIT_ASSERT(chain.getNumPointsFlushed() == 0);
-    CPPUNIT_ASSERT(chain.getChainLength() == 2);
-    CPPUNIT_ASSERT(chain.getLastPoint() == point2);
+    CPPUNIT_ASSERT(chain.num_points_buffered() == 2);
+    CPPUNIT_ASSERT(chain.num_points_flushed() == 0);
+    CPPUNIT_ASSERT(chain.length() == 2);
+    CPPUNIT_ASSERT(chain.last_point() == point2);
     
     // Add the third point as a duplicate of the second point
     // Flush() should have been called at the end of Append()
     // But point2's Point object should not have been deleted yet
     chain.Append(point2);
     
-    CPPUNIT_ASSERT(chain.getNumPointsBuffered() == 1);
-    CPPUNIT_ASSERT(chain.getNumPointsFlushed() == 2);
-    CPPUNIT_ASSERT(chain.getChainLength() == 3);
-    CPPUNIT_ASSERT(chain.getLastPoint() == point2);
+    CPPUNIT_ASSERT(chain.num_points_buffered() == 1);
+    CPPUNIT_ASSERT(chain.num_points_flushed() == 2);
+    CPPUNIT_ASSERT(chain.length() == 3);
+    CPPUNIT_ASSERT(chain.last_point() == point2);
     
-    CPPUNIT_ASSERT(gsl_vector_get(chain.getLastPoint()->getParameters(), 1) 
+    CPPUNIT_ASSERT(gsl_vector_get(chain.last_point()->parameters(), 1) 
             == gsl_vector_get(params2, 1));
     
     // Check what has been output
@@ -134,10 +134,10 @@ void ChainTestClass::testChainFill() {
     // Try flushing at this point: nothing should happen
     chain.Flush();
     
-    CPPUNIT_ASSERT(chain.getNumPointsBuffered() == 1);
-    CPPUNIT_ASSERT(chain.getNumPointsFlushed() == 2);
-    CPPUNIT_ASSERT(chain.getChainLength() == 3);
-    CPPUNIT_ASSERT(chain.getLastPoint() == point2);
+    CPPUNIT_ASSERT(chain.num_points_buffered() == 1);
+    CPPUNIT_ASSERT(chain.num_points_flushed() == 2);
+    CPPUNIT_ASSERT(chain.length() == 3);
+    CPPUNIT_ASSERT(chain.last_point() == point2);
     
     // Add a fourth point
     gsl_vector* params4 = gsl_vector_alloc(2);
@@ -152,10 +152,10 @@ void ChainTestClass::testChainFill() {
             new McmcScan::Point(params4, meas4, like4));
     chain.Append(point4);
     
-    CPPUNIT_ASSERT(chain.getNumPointsBuffered() == 2);
-    CPPUNIT_ASSERT(chain.getNumPointsFlushed() == 2);
-    CPPUNIT_ASSERT(chain.getChainLength() == 4);
-    CPPUNIT_ASSERT(chain.getLastPoint() == point4);
+    CPPUNIT_ASSERT(chain.num_points_buffered() == 2);
+    CPPUNIT_ASSERT(chain.num_points_flushed() == 2);
+    CPPUNIT_ASSERT(chain.length() == 4);
+    CPPUNIT_ASSERT(chain.last_point() == point4);
 }
 
 

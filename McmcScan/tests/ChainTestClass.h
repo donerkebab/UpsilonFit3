@@ -30,8 +30,7 @@ private:
     void testChainInitFails();
     void testChainFill();
 
-    std::string dummy_output_filename_;
-
+    std::string const dummy_output_filename_;
     double const d_;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL
 };
 
