@@ -10,6 +10,7 @@
 #include <queue>
 #include <string>
 #include "Point.h"
+#include "ChainFlushError.h"
 
 #include "Chain.h"
 
@@ -32,7 +33,16 @@ namespace McmcScan {
             throw std::invalid_argument("cannot have zero buffer size");
         }
         
-        buffer_.push(point);
+        // Also check to see if there are any issues opening the output file
+        std::FILE* output_file = std::fopen(filename_.c_str(), "a");
+        if ( output_file == nullptr ) {
+            throw McmcScan::chain_flush_error;
+        } else {
+            std::fclose(output_file);
+        }
+
+        buffer_.push(point);        
+
     }
 
     std::string Chain::getFilename() const {
@@ -77,7 +87,9 @@ namespace McmcScan {
         }
         
         std::FILE* output_file = std::fopen(filename_.c_str(), "a");
-        if ( output_file != nullptr ) {
+        if ( output_file == nullptr ) {
+            throw McmcScan::chain_flush_error;
+        } else {
             while ( buffer_.size() > 1 ) {
                 std::shared_ptr<McmcScan::Point> point = buffer_.front();
                 

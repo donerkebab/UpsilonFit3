@@ -7,6 +7,12 @@
  * of buffered points reaches the buffer size, the chain flushes all except the
  * last point into the output file.  The user may also flush the chain manually.
  * 
+ * If there are problems opening the output file, either when the Chain is
+ * constructed or during flushing, it throws McmcScan::chain_flush_error.  If
+ * this happens during construction, the Chain will fail to initialize.  If this
+ * happens during flushing, the user can ignore it, in which case the buffer
+ * will simply go unflushed until the next attempt.
+ * 
  * Chain doesn't actually store the Point objects directly, but rather 
  * shared_ptr pointers to Point objects.  This is because, in normal McmcScan 
  * use, the chain will contain many consecutive duplicate Point objects.
@@ -35,6 +41,7 @@
 #include <queue>
 #include <string>
 #include "Point.h"
+#include "ChainFlushError.h"
 
 namespace McmcScan {
     
@@ -65,8 +72,10 @@ namespace McmcScan {
         unsigned int const buffer_size_;
         unsigned int num_points_flushed_;
         
+        static McmcScan::ChainFlushError chain_flush_error;
     };
-
+    
+    McmcScan::ChainFlushError chain_flush_error; 
 }
 
 #endif	/* CHAIN_H */
