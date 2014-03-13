@@ -21,6 +21,7 @@ namespace McmcScan {
         ChainFlushError() 
         : std::runtime_error("could not open file for chain buffer flushing")
         {}
+        
     };
     
 }

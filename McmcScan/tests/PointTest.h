@@ -14,16 +14,10 @@
 class PointTest : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE(PointTest);
 
-    CPPUNIT_TEST(testPoint1);
-    CPPUNIT_TEST(testPoint2);
-    CPPUNIT_TEST(testPoint3);
-    CPPUNIT_TEST(testPoint4);
-    CPPUNIT_TEST(testPoint5);
-    CPPUNIT_TEST(testPoint6);
-    CPPUNIT_TEST(testGetLikelihood);
-    CPPUNIT_TEST(testGetMeasurements);
-    CPPUNIT_TEST(testGetParameters);
-
+    CPPUNIT_TEST(testInitialization);
+    CPPUNIT_TEST(testDefensiveCopy);
+    CPPUNIT_TEST(testAccessors);
+    
     CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -33,21 +27,15 @@ public:
     void tearDown();
 
 private:
-    void testPoint1();
-    void testPoint2();
-    void testPoint3();
-    void testPoint4();
-    void testPoint5();
-    void testPoint6();
-    void testGetLikelihood();
-    void testGetMeasurements();
-    void testGetParameters();
+    void testInitialization();
+    void testDefensiveCopy();
+    void testAccessors();
     
     gsl_vector* parameters_;
     gsl_vector* measurements_;
     double likelihood_;
     
-    double const d_ = 1E-5;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL
+    double const d_;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL
 };
 
 #endif	/* MCMCSCAN_POINTTEST_H */

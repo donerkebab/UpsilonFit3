@@ -67,6 +67,7 @@ namespace McmcScan {
 
     private:
         Chain(Chain const& orig);
+        void operator=(Chain const& orig);
 
         std::queue<std::shared_ptr<McmcScan::Point> > buffer_;
         std::string const filename_;

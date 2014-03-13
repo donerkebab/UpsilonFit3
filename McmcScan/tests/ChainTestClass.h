@@ -32,8 +32,7 @@ private:
 
     std::string dummy_output_filename_;
 
-    double const d_ = 1E-5;
-
+    double const d_;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL
 };
 
 

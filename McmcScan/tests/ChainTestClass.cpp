@@ -19,7 +19,9 @@
 
 CPPUNIT_TEST_SUITE_REGISTRATION(ChainTestClass);
 
-ChainTestClass::ChainTestClass() {
+ChainTestClass::ChainTestClass()
+: d_(1E-5)
+{
 }
 
 ChainTestClass::~ChainTestClass() {
