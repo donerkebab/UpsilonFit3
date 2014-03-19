@@ -1,11 +1,11 @@
 /*
- * File:   ChainTestClass.cpp
+ * File:   MarkovChainTestClass.cpp
  * Author: donerkebab
  *
  * Created on Mar 12, 2014, 3:49:33 PM
  */
 
-#include "ChainTestClass.h"
+#include "MarkovChainTestClass.h"
 
 #include <cstdio>
 
@@ -14,28 +14,28 @@
 #include <string>
 
 #include "../Point.h"
-#include "../Chain.h"
+#include "../MarkovChain.h"
 
 
-CPPUNIT_TEST_SUITE_REGISTRATION(ChainTestClass);
+CPPUNIT_TEST_SUITE_REGISTRATION(MarkovChainTestClass);
 
-ChainTestClass::ChainTestClass()
+MarkovChainTestClass::MarkovChainTestClass()
 : dummy_output_filename_("dummy_output_file.dat"),
         d_(1E-5)
 {
 }
 
-ChainTestClass::~ChainTestClass() {
+MarkovChainTestClass::~MarkovChainTestClass() {
 }
 
-void ChainTestClass::setUp() {
+void MarkovChainTestClass::setUp() {
 }
 
-void ChainTestClass::tearDown() {
+void MarkovChainTestClass::tearDown() {
     std::remove(dummy_output_filename_.c_str());
 }
 
-void ChainTestClass::testChainInitFails() {
+void MarkovChainTestClass::testChainInitFails() {
     gsl_vector* params = gsl_vector_calloc(2);
     gsl_vector* meas = gsl_vector_calloc(3);
     double like = 0.2;
@@ -43,15 +43,15 @@ void ChainTestClass::testChainInitFails() {
             new McmcScan::Point(params, meas, like));
     unsigned int buffer_size = 3;
     
-    CPPUNIT_ASSERT_THROW(McmcScan::Chain chain(nullptr, dummy_output_filename_, 
-            buffer_size), std::invalid_argument);
-    CPPUNIT_ASSERT_THROW(McmcScan::Chain chain(point, "", buffer_size),
+    CPPUNIT_ASSERT_THROW(McmcScan::MarkovChain chain(nullptr, 
+            dummy_output_filename_, buffer_size), std::invalid_argument);
+    CPPUNIT_ASSERT_THROW(McmcScan::MarkovChain chain(point, "", buffer_size),
             std::invalid_argument);
-    CPPUNIT_ASSERT_THROW(McmcScan::Chain chain(point, dummy_output_filename_,
-            0), std::invalid_argument);
+    CPPUNIT_ASSERT_THROW(McmcScan::MarkovChain chain(point, 
+            dummy_output_filename_, 0), std::invalid_argument);
 }
 
-void ChainTestClass::testChainFill() {
+void MarkovChainTestClass::testChainFill() {
     // Initialize the chain with the first point
     gsl_vector* params1 = gsl_vector_calloc(2);
     gsl_vector* meas1 = gsl_vector_calloc(3);
@@ -60,7 +60,7 @@ void ChainTestClass::testChainFill() {
             new McmcScan::Point(params1, meas1, like1));
     unsigned int buffer_size = 3;
 
-    McmcScan::Chain chain(point1, dummy_output_filename_, buffer_size);
+    McmcScan::MarkovChain chain(point1, dummy_output_filename_, buffer_size);
 
     CPPUNIT_ASSERT(chain.filename() == dummy_output_filename_);
     CPPUNIT_ASSERT(chain.buffer_size() == buffer_size);

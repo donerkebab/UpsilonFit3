@@ -1,19 +1,19 @@
 /*
- * File:   ChainTestClass.h
+ * File:   MarkovChainTestClass.h
  * Author: donerkebab
  *
  * Created on Mar 12, 2014, 3:49:32 PM
  */
 
-#ifndef MCMCSCAN_CHAINTESTCLASS_H
-#define	MCMCSCAN_CHAINTESTCLASS_H
+#ifndef MCMCSCAN_MARKOVCHAINTESTCLASS_H
+#define	MCMCSCAN_MARKOVCHAINTESTCLASS_H
 
 #include <string>
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class ChainTestClass : public CPPUNIT_NS::TestFixture {
-    CPPUNIT_TEST_SUITE(ChainTestClass);
+class MarkovChainTestClass : public CPPUNIT_NS::TestFixture {
+    CPPUNIT_TEST_SUITE(MarkovChainTestClass);
 
     CPPUNIT_TEST(testChainInitFails);
     CPPUNIT_TEST(testChainFill);
@@ -21,8 +21,8 @@ class ChainTestClass : public CPPUNIT_NS::TestFixture {
     CPPUNIT_TEST_SUITE_END();
 
 public:
-    ChainTestClass();
-    virtual ~ChainTestClass();
+    MarkovChainTestClass();
+    virtual ~MarkovChainTestClass();
     void setUp();
     void tearDown();
 
@@ -35,5 +35,5 @@ private:
 };
 
 
-#endif	/* MCMCSCAN_CHAINTESTCLASS_H */
+#endif	/* MCMCSCAN_MARKOVCHAINTESTCLASS_H */
 

@@ -1,11 +1,11 @@
 /* 
- * File:   Chain.cpp
+ * File:   MarkovChain.cpp
  * Author: donerkebab
  * 
  * Created on March 12, 2014, 5:11 AM
  */
 
-#include "Chain.h"
+#include "MarkovChain.h"
 
 #include <cstdio>
 
@@ -18,7 +18,7 @@
 
 namespace McmcScan {
     
-    Chain::Chain(std::shared_ptr<McmcScan::Point> const point,
+    MarkovChain::MarkovChain(std::shared_ptr<McmcScan::Point> const point,
             std::string const filename,
             unsigned int const buffer_size)
     : filename_(filename),
@@ -47,7 +47,7 @@ namespace McmcScan {
 
     }
 
-    Chain::~Chain() {
+    MarkovChain::~MarkovChain() {
         // Need to flush all of the Point objects from the chain, including the
         // last one.  Save on coding complexity by adding a new dummy Point to 
         // the buffer, and then simply calling Flush().
@@ -57,31 +57,31 @@ namespace McmcScan {
         Flush();
     }
 
-    std::string Chain::filename() const {
+    std::string MarkovChain::filename() const {
         return filename_;
     }
     
-    unsigned int Chain::buffer_size() const {
+    unsigned int MarkovChain::buffer_size() const {
         return buffer_size_;
     }
     
-    unsigned int Chain::num_points_buffered() const {
+    unsigned int MarkovChain::num_points_buffered() const {
         return buffer_.size();
     }
     
-    unsigned int Chain::num_points_flushed() const {
+    unsigned int MarkovChain::num_points_flushed() const {
         return num_points_flushed_;
     }
     
-    unsigned int Chain::length() const {
+    unsigned int MarkovChain::length() const {
         return buffer_.size() + num_points_flushed_;
     }
     
-    std::shared_ptr<McmcScan::Point> Chain::last_point() const {
+    std::shared_ptr<McmcScan::Point> MarkovChain::last_point() const {
         return buffer_.back();
     }
     
-    void Chain::Append(std::shared_ptr<McmcScan::Point> const point) {
+    void MarkovChain::Append(std::shared_ptr<McmcScan::Point> const point) {
         if ( point.get() == nullptr ) {
             throw std::invalid_argument("null point appended");
         }
@@ -93,7 +93,7 @@ namespace McmcScan {
         }
     }
     
-    void Chain::Flush() {
+    void MarkovChain::Flush() {
         if ( buffer_.size() == 1 ) {
             return;
         }

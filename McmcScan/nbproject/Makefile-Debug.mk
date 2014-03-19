@@ -35,7 +35,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/Chain.o \
+	${OBJECTDIR}/MarkovChain.o \
 	${OBJECTDIR}/Point.o
 
 # Test Directory
@@ -72,10 +72,10 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmcmcscan.a: ${OBJECTFILES}
 	${AR} -rv ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmcmcscan.a ${OBJECTFILES} 
 	$(RANLIB) ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/libmcmcscan.a
 
-${OBJECTDIR}/Chain.o: Chain.cpp 
+${OBJECTDIR}/MarkovChain.o: MarkovChain.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Chain.o Chain.cpp
+	$(COMPILE.cc) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MarkovChain.o MarkovChain.cpp
 
 ${OBJECTDIR}/Point.o: Point.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -87,7 +87,7 @@ ${OBJECTDIR}/Point.o: Point.cpp
 
 # Build Test Targets
 .build-tests-conf: .build-conf ${TESTFILES}
-${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/ChainTestClass.o ${TESTDIR}/tests/ChainTestRunner.o ${OBJECTFILES:%.o=%_nomain.o}
+${TESTDIR}/TestFiles/f2: ${TESTDIR}/tests/MarkovChainTestClass.o ${TESTDIR}/tests/MarkovChainTestRunner.o ${OBJECTFILES:%.o=%_nomain.o}
 	${MKDIR} -p ${TESTDIR}/TestFiles
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f2 $^ ${LDLIBSOPTIONS} `cppunit-config --libs`   
 
@@ -96,16 +96,16 @@ ${TESTDIR}/TestFiles/f1: ${TESTDIR}/tests/PointTest.o ${TESTDIR}/tests/PointTest
 	${LINK.cc}   -o ${TESTDIR}/TestFiles/f1 $^ ${LDLIBSOPTIONS} `cppunit-config --libs`   
 
 
-${TESTDIR}/tests/ChainTestClass.o: tests/ChainTestClass.cpp 
+${TESTDIR}/tests/MarkovChainTestClass.o: tests/MarkovChainTestClass.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/ChainTestClass.o tests/ChainTestClass.cpp
+	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/MarkovChainTestClass.o tests/MarkovChainTestClass.cpp
 
 
-${TESTDIR}/tests/ChainTestRunner.o: tests/ChainTestRunner.cpp 
+${TESTDIR}/tests/MarkovChainTestRunner.o: tests/MarkovChainTestRunner.cpp 
 	${MKDIR} -p ${TESTDIR}/tests
 	${RM} "$@.d"
-	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/ChainTestRunner.o tests/ChainTestRunner.cpp
+	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/MarkovChainTestRunner.o tests/MarkovChainTestRunner.cpp
 
 
 ${TESTDIR}/tests/PointTest.o: tests/PointTest.cpp 
@@ -120,17 +120,17 @@ ${TESTDIR}/tests/PointTestRunner.o: tests/PointTestRunner.cpp
 	$(COMPILE.cc) -g `cppunit-config --cflags` -MMD -MP -MF "$@.d" -o ${TESTDIR}/tests/PointTestRunner.o tests/PointTestRunner.cpp
 
 
-${OBJECTDIR}/Chain_nomain.o: ${OBJECTDIR}/Chain.o Chain.cpp 
+${OBJECTDIR}/MarkovChain_nomain.o: ${OBJECTDIR}/MarkovChain.o MarkovChain.cpp 
 	${MKDIR} -p ${OBJECTDIR}
-	@NMOUTPUT=`${NM} ${OBJECTDIR}/Chain.o`; \
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/MarkovChain.o`; \
 	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
 	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
 	then  \
 	    ${RM} "$@.d";\
-	    $(COMPILE.cc) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Chain_nomain.o Chain.cpp;\
+	    $(COMPILE.cc) -g -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MarkovChain_nomain.o MarkovChain.cpp;\
 	else  \
-	    ${CP} ${OBJECTDIR}/Chain.o ${OBJECTDIR}/Chain_nomain.o;\
+	    ${CP} ${OBJECTDIR}/MarkovChain.o ${OBJECTDIR}/MarkovChain_nomain.o;\
 	fi
 
 ${OBJECTDIR}/Point_nomain.o: ${OBJECTDIR}/Point.o Point.cpp 

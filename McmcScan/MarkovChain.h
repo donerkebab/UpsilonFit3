@@ -1,5 +1,5 @@
 /* 
- * File:   Chain.h
+ * File:   MarkovChain.h
  * Author: donerkebab
  *
  * Represents a Markov chain of Point objects in the parameter space.  The chain
@@ -7,13 +7,13 @@
  * of buffered points reaches the buffer size, the chain flushes all except the
  * last point into the output file.  The user may also flush the chain manually.
  * 
- * If there are problems opening the output file, either when the Chain is
+ * If there are problems opening the output file, either when the MarkovChain is
  * constructed or during flushing, it throws a McmcScan::ChainFlushError.  If
- * this happens during construction, the Chain will fail to initialize.  If this
- * happens during flushing, the user can ignore it, in which case the buffer
- * will simply go unflushed until the next attempt.
+ * this happens during construction, the MarkovChain will fail to initialize.  
+ * If this happens during flushing, the user can ignore it, in which case the 
+ * buffer will simply go unflushed until the next attempt.
  * 
- * Chain doesn't actually store the Point objects directly, but rather 
+ * MarkovChain doesn't actually store the Point objects directly, but rather 
  * shared_ptr pointers to Point objects.  This is because, in normal McmcScan 
  * use, the chain will contain many consecutive duplicate Point objects.
  * Storing them as pointers allows us to save considerable memory, and using
@@ -34,8 +34,8 @@
  * Created on March 12, 2014, 5:11 AM
  */
 
-#ifndef MCMCSCAN_CHAIN_H
-#define	MCMCSCAN_CHAIN_H
+#ifndef MCMCSCAN_MARKOVCHAIN_H
+#define	MCMCSCAN_MARKOVCHAIN_H
 
 #include <memory>
 #include <queue>
@@ -46,12 +46,12 @@
 
 namespace McmcScan {
     
-    class Chain {
+    class MarkovChain {
     public:
-        Chain(std::shared_ptr<McmcScan::Point> const point,
+        MarkovChain(std::shared_ptr<McmcScan::Point> const point,
                 std::string const filename,
                 unsigned int const buffer_size);
-        virtual ~Chain();
+        virtual ~MarkovChain();
         
         std::string filename() const;
         unsigned int buffer_size() const;
@@ -64,8 +64,8 @@ namespace McmcScan {
         void Flush();
         
     private:
-        Chain(Chain const& orig);
-        void operator=(Chain const& orig);
+        MarkovChain(MarkovChain const& orig);
+        void operator=(MarkovChain const& orig);
 
         std::queue<std::shared_ptr<McmcScan::Point> > buffer_;
         std::string const filename_;
@@ -75,5 +75,5 @@ namespace McmcScan {
     
 }
 
-#endif	/* MCMCSCAN_CHAIN_H */
+#endif	/* MCMCSCAN_MARKOVCHAIN_H */
 

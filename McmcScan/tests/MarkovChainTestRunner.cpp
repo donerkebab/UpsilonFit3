@@ -1,5 +1,5 @@
 /*
- * File:   ChainTestRunner.cpp
+ * File:   MarkovChainTestRunner.cpp
  * Author: donerkebab
  *
  * Created on Mar 12, 2014, 3:49:34 PM
