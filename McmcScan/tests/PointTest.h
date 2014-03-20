@@ -5,8 +5,8 @@
  * Created on Mar 10, 2014, 10:21:34 AM
  */
 
-#ifndef MCMCSCAN_POINTTEST_H
-#define	MCMCSCAN_POINTTEST_H
+#ifndef MCMC_POINTTEST_H
+#define	MCMC_POINTTEST_H
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <gsl/gsl_vector.h>
@@ -38,5 +38,5 @@ private:
     double const d_;  // delta for CPPUNIT_ASSERT_DOUBLES_EQUAL
 };
 
-#endif	/* MCMCSCAN_POINTTEST_H */
+#endif	/* MCMC_POINTTEST_H */
 

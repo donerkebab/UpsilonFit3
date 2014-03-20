@@ -30,18 +30,18 @@
  * Created on March 9, 2014, 4:51 AM
  */
 
-#ifndef MCMCSCAN_POINT_H
-#define	MCMCSCAN_POINT_H
+#ifndef MCMC_POINT_H
+#define	MCMC_POINT_H
 
 #include <gsl/gsl_vector.h>
 
-namespace McmcScan {
+namespace Mcmc {
 
     class Point {
     public:
-        Point(gsl_vector* const parameters,
-                gsl_vector* const measurements,
-                double const likelihood);
+        Point(gsl_vector const* parameters,
+                gsl_vector const* measurements,
+                double likelihood);
         virtual ~Point();
 
         gsl_vector const* parameters() const;
@@ -59,5 +59,5 @@ namespace McmcScan {
 
 }
 
-#endif	/* MCMCSCAN_POINT_H */
+#endif	/* MCMC_POINT_H */
 

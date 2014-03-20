@@ -11,11 +11,11 @@
 
 #include <gsl/gsl_vector.h>
 
-namespace McmcScan {
+namespace Mcmc {
 
-    Point::Point(gsl_vector * const parameters,
-            gsl_vector * const measurements,
-            double const likelihood) {
+    Point::Point(gsl_vector const* parameters,
+            gsl_vector const* measurements,
+            double likelihood) {
         if (parameters == nullptr) {
             throw std::invalid_argument("input parameters is null");
         }

@@ -16,11 +16,11 @@
 #include "Point.h"
 #include "ChainFlushError.h"
 
-namespace McmcScan {
+namespace Mcmc {
     
-    MarkovChain::MarkovChain(std::shared_ptr<McmcScan::Point> const point,
-            std::string const filename,
-            unsigned int const buffer_size)
+    MarkovChain::MarkovChain(std::shared_ptr<Mcmc::Point> point,
+            std::string filename,
+            unsigned int buffer_size)
     : filename_(filename),
             buffer_size_(buffer_size),
             num_points_flushed_(0)
@@ -38,7 +38,7 @@ namespace McmcScan {
         // Also check to see if there are any issues opening the output file
         std::FILE* output_file = std::fopen(filename_.c_str(), "a");
         if ( output_file == nullptr ) {
-            throw McmcScan::ChainFlushError();
+            throw Mcmc::ChainFlushError();
         } else {
             std::fclose(output_file);
         }
@@ -52,8 +52,8 @@ namespace McmcScan {
         // last one.  Save on coding complexity by adding a new dummy Point to 
         // the buffer, and then simply calling Flush().
         
-        buffer_.push(std::shared_ptr<McmcScan::Point>(
-                new Point(gsl_vector_alloc(1), gsl_vector_alloc(1), 0.) ) );
+        buffer_.push(std::shared_ptr<Mcmc::Point>(
+                new Mcmc::Point(gsl_vector_alloc(1), gsl_vector_alloc(1), 0.)));
         Flush();
     }
 
@@ -77,11 +77,11 @@ namespace McmcScan {
         return buffer_.size() + num_points_flushed_;
     }
     
-    std::shared_ptr<McmcScan::Point> MarkovChain::last_point() const {
+    std::shared_ptr<Mcmc::Point> MarkovChain::last_point() const {
         return buffer_.back();
     }
     
-    void MarkovChain::Append(std::shared_ptr<McmcScan::Point> const point) {
+    void MarkovChain::Append(std::shared_ptr<Mcmc::Point> point) {
         if ( point.get() == nullptr ) {
             throw std::invalid_argument("null point appended");
         }
@@ -100,10 +100,10 @@ namespace McmcScan {
         
         std::FILE* output_file = std::fopen(filename_.c_str(), "a");
         if ( output_file == nullptr ) {
-            throw McmcScan::ChainFlushError();
+            throw Mcmc::ChainFlushError();
         } else {
             while ( buffer_.size() > 1 ) {
-                std::shared_ptr<McmcScan::Point> point = buffer_.front();
+                std::shared_ptr<Mcmc::Point> point = buffer_.front();
                 
                 gsl_vector const* parameters = point->parameters();
                 for ( int i = 0; i < parameters->size; ++i ) {

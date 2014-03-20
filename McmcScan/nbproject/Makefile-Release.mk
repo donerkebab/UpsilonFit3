@@ -36,6 +36,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 # Object Files
 OBJECTFILES= \
 	${OBJECTDIR}/MarkovChain.o \
+	${OBJECTDIR}/McmcScan.o \
 	${OBJECTDIR}/Point.o
 
 # Test Directory
@@ -76,6 +77,11 @@ ${OBJECTDIR}/MarkovChain.o: MarkovChain.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MarkovChain.o MarkovChain.cpp
+
+${OBJECTDIR}/McmcScan.o: McmcScan.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.cc) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/McmcScan.o McmcScan.cpp
 
 ${OBJECTDIR}/Point.o: Point.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -131,6 +137,19 @@ ${OBJECTDIR}/MarkovChain_nomain.o: ${OBJECTDIR}/MarkovChain.o MarkovChain.cpp
 	    $(COMPILE.cc) -O2 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/MarkovChain_nomain.o MarkovChain.cpp;\
 	else  \
 	    ${CP} ${OBJECTDIR}/MarkovChain.o ${OBJECTDIR}/MarkovChain_nomain.o;\
+	fi
+
+${OBJECTDIR}/McmcScan_nomain.o: ${OBJECTDIR}/McmcScan.o McmcScan.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	@NMOUTPUT=`${NM} ${OBJECTDIR}/McmcScan.o`; \
+	if (echo "$$NMOUTPUT" | ${GREP} '|main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T main$$') || \
+	   (echo "$$NMOUTPUT" | ${GREP} 'T _main$$'); \
+	then  \
+	    ${RM} "$@.d";\
+	    $(COMPILE.cc) -O2 -Dmain=__nomain -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/McmcScan_nomain.o McmcScan.cpp;\
+	else  \
+	    ${CP} ${OBJECTDIR}/McmcScan.o ${OBJECTDIR}/McmcScan_nomain.o;\
 	fi
 
 ${OBJECTDIR}/Point_nomain.o: ${OBJECTDIR}/Point.o Point.cpp 

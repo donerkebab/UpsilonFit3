@@ -9,12 +9,12 @@
  * Created on March 13, 2014, 4:19 AM
  */
 
-#ifndef MCMCSCAN_CHAINFLUSHERROR_H
-#define	MCMCSCAN_CHAINFLUSHERROR_H
+#ifndef MCMC_CHAINFLUSHERROR_H
+#define	MCMC_CHAINFLUSHERROR_H
 
 #include <stdexcept>
 
-namespace McmcScan {
+namespace Mcmc {
     
     class ChainFlushError : public std::runtime_error {
     public:
@@ -26,5 +26,5 @@ namespace McmcScan {
 }
 
 
-#endif	/* MCMCSCAN_CHAINFLUSHERROR_H */
+#endif	/* MCMC_CHAINFLUSHERROR_H */
 

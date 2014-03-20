@@ -12,6 +12,7 @@
 *.la
 *.a
 
+.DS_Store
 oldstuff/
 suspect2.tar.gz
 /McmcScan/build/

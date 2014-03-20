@@ -39,15 +39,15 @@ void MarkovChainTestClass::testChainInitFails() {
     gsl_vector* params = gsl_vector_calloc(2);
     gsl_vector* meas = gsl_vector_calloc(3);
     double like = 0.2;
-    std::shared_ptr<McmcScan::Point> point(
-            new McmcScan::Point(params, meas, like));
+    std::shared_ptr<Mcmc::Point> point(
+            new Mcmc::Point(params, meas, like));
     unsigned int buffer_size = 3;
     
-    CPPUNIT_ASSERT_THROW(McmcScan::MarkovChain chain(nullptr, 
+    CPPUNIT_ASSERT_THROW(Mcmc::MarkovChain chain(nullptr, 
             dummy_output_filename_, buffer_size), std::invalid_argument);
-    CPPUNIT_ASSERT_THROW(McmcScan::MarkovChain chain(point, "", buffer_size),
+    CPPUNIT_ASSERT_THROW(Mcmc::MarkovChain chain(point, "", buffer_size),
             std::invalid_argument);
-    CPPUNIT_ASSERT_THROW(McmcScan::MarkovChain chain(point, 
+    CPPUNIT_ASSERT_THROW(Mcmc::MarkovChain chain(point, 
             dummy_output_filename_, 0), std::invalid_argument);
 }
 
@@ -56,11 +56,11 @@ void MarkovChainTestClass::testChainFill() {
     gsl_vector* params1 = gsl_vector_calloc(2);
     gsl_vector* meas1 = gsl_vector_calloc(3);
     double like1 = 0.2;
-    std::shared_ptr<McmcScan::Point> point1(
-            new McmcScan::Point(params1, meas1, like1));
+    std::shared_ptr<Mcmc::Point> point1(
+            new Mcmc::Point(params1, meas1, like1));
     unsigned int buffer_size = 3;
 
-    McmcScan::MarkovChain chain(point1, dummy_output_filename_, buffer_size);
+    Mcmc::MarkovChain chain(point1, dummy_output_filename_, buffer_size);
 
     CPPUNIT_ASSERT(chain.filename() == dummy_output_filename_);
     CPPUNIT_ASSERT(chain.buffer_size() == buffer_size);
@@ -78,8 +78,8 @@ void MarkovChainTestClass::testChainFill() {
     gsl_vector_set(meas2, 1, 1.2);
     gsl_vector_set(meas2, 2, 2.3);
     double like2 = 0.56;
-    std::shared_ptr<McmcScan::Point> point2(
-            new McmcScan::Point(params2, meas2, like2));
+    std::shared_ptr<Mcmc::Point> point2(
+            new Mcmc::Point(params2, meas2, like2));
     chain.Append(point2);
     
     CPPUNIT_ASSERT(chain.num_points_buffered() == 2);
@@ -148,8 +148,8 @@ void MarkovChainTestClass::testChainFill() {
     gsl_vector_set(meas4, 1, 2.1);
     gsl_vector_set(meas4, 2, 3.2);
     double like4 = 10.3;
-    std::shared_ptr<McmcScan::Point> point4(
-            new McmcScan::Point(params4, meas4, like4));
+    std::shared_ptr<Mcmc::Point> point4(
+            new Mcmc::Point(params4, meas4, like4));
     chain.Append(point4);
     
     CPPUNIT_ASSERT(chain.num_points_buffered() == 2);

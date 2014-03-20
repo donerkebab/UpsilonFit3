@@ -34,8 +34,8 @@
  * Created on March 12, 2014, 5:11 AM
  */
 
-#ifndef MCMCSCAN_MARKOVCHAIN_H
-#define	MCMCSCAN_MARKOVCHAIN_H
+#ifndef MCMC_MARKOVCHAIN_H
+#define	MCMC_MARKOVCHAIN_H
 
 #include <memory>
 #include <queue>
@@ -44,13 +44,13 @@
 #include "Point.h"
 #include "ChainFlushError.h"
 
-namespace McmcScan {
+namespace Mcmc {
     
     class MarkovChain {
     public:
-        MarkovChain(std::shared_ptr<McmcScan::Point> const point,
-                std::string const filename,
-                unsigned int const buffer_size);
+        MarkovChain(std::shared_ptr<Mcmc::Point> point,
+                std::string filename,
+                unsigned int buffer_size);
         virtual ~MarkovChain();
         
         std::string filename() const;
@@ -58,16 +58,16 @@ namespace McmcScan {
         unsigned int num_points_buffered() const;
         unsigned int num_points_flushed() const;
         unsigned int length() const;
-        std::shared_ptr<McmcScan::Point> last_point() const;
+        std::shared_ptr<Mcmc::Point> last_point() const;
         
-        void Append(std::shared_ptr<McmcScan::Point> const point);
+        void Append(std::shared_ptr<Mcmc::Point> point);
         void Flush();
         
     private:
         MarkovChain(MarkovChain const& orig);
         void operator=(MarkovChain const& orig);
 
-        std::queue<std::shared_ptr<McmcScan::Point> > buffer_;
+        std::queue<std::shared_ptr<Mcmc::Point> > buffer_;
         std::string const filename_;
         unsigned int const buffer_size_;
         unsigned int num_points_flushed_;
@@ -75,5 +75,5 @@ namespace McmcScan {
     
 }
 
-#endif	/* MCMCSCAN_MARKOVCHAIN_H */
+#endif	/* MCMC_MARKOVCHAIN_H */
 

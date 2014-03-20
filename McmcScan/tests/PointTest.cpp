@@ -42,21 +42,21 @@ void PointTest::tearDown() {
 }
 
 void PointTest::testInitialization() {
-    CPPUNIT_ASSERT_NO_THROW(McmcScan::Point(parameters_, measurements_, 
+    CPPUNIT_ASSERT_NO_THROW(Mcmc::Point(parameters_, measurements_, 
             likelihood_));
-    CPPUNIT_ASSERT_NO_THROW(McmcScan::Point(parameters_, measurements_, 0.0));
+    CPPUNIT_ASSERT_NO_THROW(Mcmc::Point(parameters_, measurements_, 0.0));
     
-    CPPUNIT_ASSERT_THROW(McmcScan::Point(nullptr, measurements_, likelihood_),
+    CPPUNIT_ASSERT_THROW(Mcmc::Point(nullptr, measurements_, likelihood_),
             std::invalid_argument);
-    CPPUNIT_ASSERT_THROW(McmcScan::Point(parameters_, nullptr, likelihood_),
+    CPPUNIT_ASSERT_THROW(Mcmc::Point(parameters_, nullptr, likelihood_),
             std::invalid_argument);
-    CPPUNIT_ASSERT_THROW(McmcScan::Point(parameters_, measurements_, -0.6), 
+    CPPUNIT_ASSERT_THROW(Mcmc::Point(parameters_, measurements_, -0.6), 
             std::invalid_argument); 
 }
 
 void PointTest::testDefensiveCopy() {
     // Test for defensive copy on construction
-    McmcScan::Point point(parameters_, measurements_, likelihood_);
+    Mcmc::Point point(parameters_, measurements_, likelihood_);
     
     double old_value = gsl_vector_get(parameters_, 0);
     gsl_vector_set(parameters_, 0, 55.);
@@ -66,7 +66,7 @@ void PointTest::testDefensiveCopy() {
 }
 
 void PointTest::testAccessors() {
-    McmcScan::Point point(parameters_, measurements_, likelihood_);
+    Mcmc::Point point(parameters_, measurements_, likelihood_);
     
     CPPUNIT_ASSERT(gsl_vector_equal(point.parameters(), parameters_) == 1);
     CPPUNIT_ASSERT(gsl_vector_equal(point.measurements(), measurements_) 
