@@ -124,11 +124,7 @@ namespace Mcmc {
     }
 
     std::shared_ptr<Mcmc::Point> McmcScan::TrialPoint(
-            unsigned int chain_to_update) {
-
-        // Retrieve the last point from the chain to update
-        std::shared_ptr<Mcmc::Point> last_point =
-                chains_[chain_to_update].last_point();
+            std::shared_ptr<Mcmc::Point> last_point) {
         unsigned int dimension = last_point->parameters()->size;
         double f = 2.381 / std::sqrt(dimension);
 
@@ -167,9 +163,10 @@ namespace Mcmc {
 
             // Test to see if the new parameters are valid
             if (IsValidParameters(trial_parameters)) {
-                // TODO: Call Measure, Likelihood
                 gsl_vector* trial_measurements = nullptr;
                 double trial_likelihood = 0.0;
+                MeasurePoint(trial_parameters, trial_measurements,
+                        trial_likelihood);
 
                 std::shared_ptr<Mcmc::Point> trial_point(
                         new Mcmc::Point(trial_parameters, trial_measurements,

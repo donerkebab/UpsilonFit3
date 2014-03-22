@@ -65,10 +65,23 @@ namespace Mcmc {
         /*
          * Constructs a trial point from the last point in the chain to update.
          */
-        std::shared_ptr<Mcmc::Point> TrialPoint(unsigned int chain_to_update);
+        std::shared_ptr<Mcmc::Point> TrialPoint(std::shared_ptr<Mcmc::Point>
+                last_point);
 
+        /*
+         * Determines if the parameters are valid in the parameter space.
+         * (virtual)
+         */
         virtual bool IsValidParameters(gsl_vector const* parameters) = 0;
-        virtual void Measure() = 0;
+
+        /*
+         * Calculates the measurements and likelihood for a given set of
+         * parameters.
+         * (virtual)
+         */
+        virtual void MeasurePoint(gsl_vector const* parameters,
+                gsl_vector* measurements,
+                double& likelihood) = 0;
 
 
 
