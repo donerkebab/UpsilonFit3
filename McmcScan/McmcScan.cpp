@@ -299,7 +299,7 @@ namespace Mcmc {
         }
         gsl_matrix_free(temp_matrix1);
         gsl_matrix_free(temp_matrix2);
-        
+
         // Free memory of intermediates
         gsl_vector_free(trial_shift);
         for (int i = 0; i < 2; ++i) {
@@ -307,13 +307,58 @@ namespace Mcmc {
             gsl_vector_free(b[i]);
         }
         gsl_matrix_free(one_plus_lambda);
-        gsl_matrix_free(one_plus_lambda_inv);        
+        gsl_matrix_free(one_plus_lambda_inv);
     }
-    
-    
-    
-    
-    
+
+    double McmcScan::Lambda() {
+        double lambda = 1.0;
+
+        if (num_steps_ <= burn_fraction_ * max_steps_ / 2.0) {
+            lambda = std::pow(0.01,
+                    1.0 - num_steps_ / (burn_fraction_ * max_steps_ / 2.0));
+        }
+
+        return lambda;
+    }
+
+    double McmcScan::AcceptanceRatio(std::shared_ptr<Mcmc::Point> last_point,
+            std::shared_ptr<Mcmc::Point> trial_point,
+            gsl_matrix const* trial_covariance_inv,
+            double trial_covariance_det) {
+        unsigned int dimension = last_point->parameters()->size;
+        double f = 2.381 / std::sqrt(dimension);
+
+        // Calculate the trial shift
+        // trial_shift = trial_parameters - last_parameters
+        gsl_vector* trial_shift = gsl_vector_alloc(dimension);
+        gsl_vector_memcpy(trial_shift, trial_point->parameters());
+        gsl_vector_sub(trial_shift, last_point->parameters());
+
+        // Calculate the linear algebra part of the formula
+        // gsl_blas_dgemv: "the matrix-vector product and sum
+        //                  (6') = (2)(3)(4) + (5)(6)"
+        // gsl_blas_ddot: "the scalar product (3) = (1)^T (2)"
+        double linear_algebra_part;
+        gsl_matrix* temp_matrix = gsl_matrix_alloc(dimension, dimension);
+        gsl_vector* temp_vector = gsl_vector_alloc(dimension);
+        gsl_matrix_memcpy(temp_matrix, trial_covariance_inv);
+        gsl_matrix_sub(temp_matrix, last_points_covariance_inv_);
+        gsl_blas_dgemv(CblasNoTrans, 1.0, temp_matrix, trial_shift, 0.0,
+                temp_vector);
+        gsl_blas_ddot(trial_shift, temp_vector, &linear_algebra_part);
+        gsl_matrix_free(temp_matrix);
+        gsl_vector_free(temp_vector);
+
+        // Calculate the acceptance ratio
+        double acceptance_ratio =
+                std::sqrt(last_points_covariance_det_ / trial_covariance_det) *
+                std::exp(-1.0 / (2.0 * gsl_pow_2(f)) * linear_algebra_part) *
+                std::pow(trial_point->likelihood() / last_point->likelihood(),
+                Lambda());
+
+        return acceptance_ratio;
+    }
+
 
 
 }

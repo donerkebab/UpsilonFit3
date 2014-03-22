@@ -3,7 +3,7 @@
  * Author: donerkebab
  *
  * 
- * 
+ * Gaussian proposal
  * 
  * Dev notes:
  * * I would have liked to use a std::array to hold the chains, but the size of
@@ -78,6 +78,20 @@ namespace Mcmc {
                 std::shared_ptr<Mcmc::Point> trial_point,
                 gsl_vector* trial_mean, gsl_matrix* trial_covariance,
                 gsl_matrix* trial_covariance_inv, double& trial_covariance_det);
+
+        /*
+         * Calculates lambda, the annealing exponent.  It takes values other
+         * than 1 for the first half of the burn-in period.
+         */
+        double Lambda();
+
+        /*
+         * Calculates the acceptance ratio for the trial point.
+         */
+        double AcceptanceRatio(std::shared_ptr<Mcmc::Point> last_point,
+                std::shared_ptr<Mcmc::Point> trial_point,
+                gsl_matrix const* trial_covariance_inv,
+                double trial_covariance_det);
 
         /*
          * Determines if the parameters are valid in the parameter space.
