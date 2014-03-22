@@ -69,6 +69,17 @@ namespace Mcmc {
                 last_point);
 
         /*
+         * Calculates the mean and covariance if the trial point is accepted.
+         * Done by updating the last_* quantities with the new trial point,
+         * without having to recalculate them from scratch.  Follows the 
+         * procedure in Baltz, et al. (arXiv:hep-ph/0602187)
+         */
+        void TrialMeanAndCovariance(std::shared_ptr<Mcmc::Point> last_point,
+                std::shared_ptr<Mcmc::Point> trial_point,
+                gsl_vector* trial_mean, gsl_matrix* trial_covariance,
+                gsl_matrix* trial_covariance_inv, double& trial_covariance_det);
+
+        /*
          * Determines if the parameters are valid in the parameter space.
          * (virtual)
          */
