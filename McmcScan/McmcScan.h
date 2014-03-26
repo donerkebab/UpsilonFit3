@@ -2,12 +2,19 @@
  * File:   McmcScan.h
  * Author: donerkebab
  *
- * 
+ * adaptive Metropolis-Hastings algorithm with simulated annealing
  * Gaussian proposal
+ * require more chains than dimensions, or else covariance matrix is singular
+ * all inputs checked in constructor
  * 
  * Dev notes:
  * * I would have liked to use a std::array to hold the chains, but the size of
- *   the array is not known at compile-time.
+ *   the array is supplied by the user and not guaranteed to be known at 
+ *   compile time.
+ * * When MarkovChain::Append() is called in Run(), Mcmc::ChainFlushError only
+ *   results in printing a message to stdout.  Flushing will be tried again.
+ * * For all the private methods, all output pointers are allocated within the
+ *   method.  So the output pointers passed in should not be allocated already.
  * 
  * Created on March 19, 2014, 11:19 PM
  */
@@ -29,36 +36,31 @@ namespace Mcmc {
 
     class McmcScan {
     public:
-        McmcScan(unsigned int max_steps,
-                double burn_fraction,
+        // may throw Mcmc::PositiveDefiniteError if the starting covariance
+        //   matrix is not positive definite
+        // may throw Mcmc::ChainFlushError if output files cannot be opened
+        McmcScan(unsigned int dimension,
                 unsigned int num_chains,
-                unsigned int buffer_size,
-                std::string output_folder_path,
-                unsigned int tries_per_direction,
-                std::pair<double, double> init_likelihood_bounds,
-                gsl_vector const* benchmark_point);
+                unsigned int max_steps,
+                double burn_fraction);
         virtual ~McmcScan();
 
-
+        // may throw Mcmc::PositiveDefiniteError if the covariance matrix
+        //   becomes no longer positive definite
+        // may throw Mcmc::ChainFlushError if output files cannot be opened
+        void Run();
 
     private:
         McmcScan(McmcScan const& orig);
         void operator=(McmcScan const& orig);
 
         /*
-         * Initializes the chains randomly around the benchmark point.
-         */
-        void InitializeChains(unsigned int num_chains,
-                unsigned int buffer_size,
-                std::string output_folder_path,
-                unsigned int tries_per_direction,
-                std::pair<double, double> init_likelihood_bounds,
-                gsl_vector const* benchmark_point);
-
-        /*
          * Initializes the vector mean of the parameters of each chain's last 
          * point, the covariance matrix, inverse covariance matrix, and
          * determinant of the covariance matrix.
+         * 
+         * throws Mcmc::PositiveDefiniteError if covariance matrix is not
+         * positive definite
          */
         void InitializeLastPointsMeanAndCovariance();
 
@@ -73,11 +75,14 @@ namespace Mcmc {
          * Done by updating the last_* quantities with the new trial point,
          * without having to recalculate them from scratch.  Follows the 
          * procedure in Baltz, et al. (arXiv:hep-ph/0602187)
+         * 
+         * throws Mcmc::PositiveDefiniteError if trial covariance matrix is not
+         * positive definite
          */
         void TrialMeanAndCovariance(std::shared_ptr<Mcmc::Point> last_point,
                 std::shared_ptr<Mcmc::Point> trial_point,
                 gsl_vector* trial_mean, gsl_matrix* trial_covariance,
-                gsl_matrix* trial_covariance_inv, double& trial_covariance_det);
+                double& trial_covariance_det, gsl_matrix* trial_covariance_inv);
 
         /*
          * Calculates lambda, the annealing exponent.  It takes values other
@@ -90,28 +95,34 @@ namespace Mcmc {
          */
         double AcceptanceRatio(std::shared_ptr<Mcmc::Point> last_point,
                 std::shared_ptr<Mcmc::Point> trial_point,
-                gsl_matrix const* trial_covariance_inv,
-                double trial_covariance_det);
+                double trial_covariance_det,
+                gsl_matrix const* trial_covariance_inv);
 
         /*
          * Determines if the parameters are valid in the parameter space.
-         * (virtual)
+         * (abstract)
          */
         virtual bool IsValidParameters(gsl_vector const* parameters) = 0;
 
         /*
          * Calculates the measurements and likelihood for a given set of
          * parameters.
-         * (virtual)
+         * (abstract)
          */
         virtual void MeasurePoint(gsl_vector const* parameters,
                 gsl_vector* measurements,
                 double& likelihood) = 0;
 
-
+        /*
+         * Initializes the chains with initial points.
+         * (abstract)
+         */
+        virtual void InitializeChains() = 0;
 
         std::vector<Mcmc::MarkovChain> chains_;
 
+        unsigned int const dimension_;
+        unsigned int const num_chains_;
         unsigned int const max_steps_;
         double const burn_fraction_;
         gsl_rng* rng_;
@@ -119,8 +130,8 @@ namespace Mcmc {
         unsigned int num_steps_;
         gsl_vector* last_points_mean_;
         gsl_matrix* last_points_covariance_;
-        gsl_matrix* last_points_covariance_inv_;
         double last_points_covariance_det_;
+        gsl_matrix* last_points_covariance_inv_;
     };
 
 }

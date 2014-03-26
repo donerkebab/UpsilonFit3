@@ -13,8 +13,8 @@
 #include <queue>
 #include <string>
 
-#include "Point.h"
 #include "ChainFlushError.h"
+#include "Point.h"
 
 namespace Mcmc {
     

@@ -1,0 +1,51 @@
+    void McmcScan::InitializeChains(unsigned int num_chains,
+            unsigned int buffer_size,
+            std::string output_folder_path,
+            unsigned int init_tries_per_direction,
+            double init_step_guess,
+            std::pair<double, double> init_likelihood_bounds,
+            gsl_vector const* benchmark_point) {
+        
+        
+        // TODO: output progress
+        
+        gsl_vector* trial_direction = gsl_vector_alloc(benchmark_point.size);
+        
+        while (chains_.size() < num_chains) {
+            // Generate random direction in the subspace, normalized to 1
+            double trial_direction_norm_squared = 0;
+            for (int i = 0; i < benchmark_point.size; ++i) {
+                int element = gsl_rng_uniform(rng_);
+                gsl_vector_set(trial_direction, i, element);
+                trial_direction_norm_squared += gsl_pow_2(element);
+            }
+            gsl_vector_scale(trial_direction, 
+                    1.0 / std::sqrt(trial_direction_norm_squared));
+            
+            // Begin to search for the step size that gets us in the likelihood
+            // range 
+            // [init_likelihood_bounds.first, init_likelihood_bounds.second]
+            unsigned int num_tries = 0;
+            double current_step = init_step_guess;
+            double lower_step_bound = 0.0;
+            double upper_step_bound = -1.0;  // start with no upper bound
+            bool found_trial_point = false;
+            while (!found_trial_point && num_tries < init_tries_per_direction) {
+                // Generate parameters for this step size
+                // gsl_blas_daxpy: "sum (3') = (1)(2) + (3)"
+                gsl_vector* trial_parameters = 
+                        gsl_vector_alloc(benchmark_point.size);
+                gsl_vector_memcpy(trial_parameters, benchmark_point);
+                gsl_blas_daxpy(current_step, trial_direction, trial_parameters);
+
+                // If the parameters 
+                
+            }
+            
+        }
+        
+        gsl_vector_free(trial_direction);
+        
+        
+        
+    }

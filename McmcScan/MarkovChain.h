@@ -48,6 +48,7 @@ namespace Mcmc {
     
     class MarkovChain {
     public:
+        // throws Mcmc::ChainFlushError if output file cannot be opened
         MarkovChain(std::shared_ptr<Mcmc::Point> point,
                 std::string filename,
                 unsigned int buffer_size);
@@ -60,7 +61,9 @@ namespace Mcmc {
         unsigned int length() const;
         std::shared_ptr<Mcmc::Point> last_point() const;
         
+        // throws Mcmc::ChainFlushError if output file cannot be opened
         void Append(std::shared_ptr<Mcmc::Point> point);
+        // throws Mcmc::ChainFlushError if output file cannot be opened
         void Flush();
         
     private:

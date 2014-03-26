@@ -19,6 +19,7 @@
       <itemPath>McmcScan.h</itemPath>
       <itemPath>Point.cpp</itemPath>
       <itemPath>Point.h</itemPath>
+      <itemPath>PositiveDefiniteError.h</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -79,6 +80,8 @@
       <item path="Point.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Point.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PositiveDefiniteError.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>
@@ -156,6 +159,8 @@
       <item path="Point.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Point.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="PositiveDefiniteError.h" ex="false" tool="3" flavor2="0">
       </item>
       <folder path="TestFiles/f1">
         <cTool>
