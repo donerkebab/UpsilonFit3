@@ -30,8 +30,10 @@
 
 namespace Mcmc {
 
-    McmcScan::McmcScan(unsigned int dimension, unsigned int num_chains,
-            unsigned int max_steps, double burn_fraction)
+    McmcScan::McmcScan(unsigned int dimension, 
+            unsigned int num_chains,
+            unsigned int max_steps, 
+            double burn_fraction)
     : dimension_(dimension),
     num_chains_(num_chains),
     max_steps_(max_steps),
@@ -51,7 +53,17 @@ namespace Mcmc {
         // Initialize the random number generator
         rng_ = gsl_rng_alloc(gsl_rng_default);
         gsl_rng_set(rng_, std::time(nullptr));
+    }
 
+    McmcScan::~McmcScan() {
+        // The chains are automatically fully flushed when destroyed.
+        gsl_rng_free(rng_);
+        gsl_vector_free(last_points_mean_);
+        gsl_matrix_free(last_points_covariance_);
+        gsl_matrix_free(last_points_covariance_inv_);
+    }
+
+    void McmcScan::Initialize() {
         // Initialize the chains
         InitializeChains();
 
@@ -72,15 +84,7 @@ namespace Mcmc {
         // Initialize the last points' mean, covariance
         InitializeLastPointsMeanAndCovariance();
     }
-
-    McmcScan::~McmcScan() {
-        // The chains are automatically fully flushed when destroyed.
-        gsl_rng_free(rng_);
-        gsl_vector_free(last_points_mean_);
-        gsl_matrix_free(last_points_covariance_);
-        gsl_matrix_free(last_points_covariance_inv_);
-    }
-
+    
     void McmcScan::Run() {
         while (num_steps_ < max_steps_) {
             // Increment num_steps_ here to get the right value for Lambda()
@@ -243,8 +247,10 @@ namespace Mcmc {
     void McmcScan::TrialMeanAndCovariance(
             std::shared_ptr<Mcmc::Point> last_point,
             std::shared_ptr<Mcmc::Point> trial_point,
-            gsl_vector* trial_mean, gsl_matrix* trial_covariance,
-            double& trial_covariance_det, gsl_matrix* trial_covariance_inv) {
+            gsl_vector* trial_mean, 
+            gsl_matrix* trial_covariance,
+            double& trial_covariance_det, 
+            gsl_matrix* trial_covariance_inv) {
         // Calculate the trial shift
         // trial_shift = trial_parameters - last_parameters
         gsl_vector* trial_shift = gsl_vector_alloc(dimension_);
@@ -333,8 +339,6 @@ namespace Mcmc {
                 one_plus_lambda_det);
         gsl_matrix_set(one_plus_lambda_inv, 1, 1,
                 gsl_matrix_get(one_plus_lambda, 0, 0) / one_plus_lambda_det);
-
-
 
         // Update the covariance matrix
         // C' = C + a[0]*b0^T + a[1]*b[1]^T

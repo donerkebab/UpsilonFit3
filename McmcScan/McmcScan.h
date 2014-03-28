@@ -2,17 +2,37 @@
  * File:   McmcScan.h
  * Author: donerkebab
  *
- * adaptive Metropolis-Hastings algorithm with simulated annealing
- * Gaussian proposal
- * require more chains than dimensions, or else covariance matrix is singular
- * all inputs checked in constructor
+ * Markov chain Monte Carlo (MCMC) scan of a parameter space.  Abstract class.
+ * Users must subclass McmcScan, supplying implementations for the pure virtual 
+ * methods IsValidParameters(), MeasurePoint(), and InitializeChains().
+ * 
+ * McmcScan uses an adaptive Metropolis-Hastings algorithm with simulated
+ * annealing.  A Gaussian proposal is used to choose the trial shift.  The
+ * algorithm is adaptive in that the size of the shift in any direction is based
+ * on the covariance matrix of the chains' last points, which is a measure of
+ * how large the posterior probability distribution seems to be at that time.
+ * These quantities are continuously updated at each step.
+ * 
+ * Users must first extend this class to supply
+ * * IsValidParameters(), which returns true if the parameters are within the
+ *   bounds of the parameter space.
+ * * MeasurePoint(), which supplies the measurements and likelihood for a given
+ *   point in the parameter space.
+ * * InitializeChains(), which initializes the Markov chains with seed points in
+ *   the parameter space.  The number of chains must be more than the number of
+ *   dimensions in the parameter space, so that the covariance matrix will be
+ *   positive definite.
+ * Users should then initialize an instance of the subclass, and then call
+ * Initialize(), and then Run().  
  * 
  * Dev notes:
  * * I would have liked to use a std::array to hold the chains, but the size of
  *   the array is supplied by the user and not guaranteed to be known at 
  *   compile time.
  * * When MarkovChain::Append() is called in Run(), Mcmc::ChainFlushError only
- *   results in printing a message to stdout.  Flushing will be tried again.
+ *   results in printing a message to stdout.  Flushing will be tried again the
+ *   next time MarkovChain::Append(), MarkovChain::Flush(), or the destructor
+ *   is called.
  * * For all the private methods, all output pointers are allocated within the
  *   method.  So the output pointers passed in should not be allocated already.
  * 
@@ -36,18 +56,31 @@ namespace Mcmc {
 
     class McmcScan {
     public:
-        // may throw Mcmc::PositiveDefiniteError if the starting covariance
-        //   matrix is not positive definite
-        // may throw Mcmc::ChainFlushError if output files cannot be opened
         McmcScan(unsigned int dimension,
                 unsigned int num_chains,
                 unsigned int max_steps,
                 double burn_fraction);
         virtual ~McmcScan();
 
-        // may throw Mcmc::PositiveDefiniteError if the covariance matrix
-        //   becomes no longer positive definite
-        // may throw Mcmc::ChainFlushError if output files cannot be opened
+        /*
+         * Initializes the scan by initializing the chains and other starting
+         * variables.  Must be called before Run().
+         * 
+         * may throw Mcmc::PositiveDefiniteError if the starting covariance 
+         * matrix is not positive definite
+         * 
+         * may throw Mcmc::ChainFlushError if output files cannot be opened
+         */
+        void Initialize();
+        
+        /*
+         * Runs the scan.  Must be called after Initialize().
+         * 
+         * may throw Mcmc::PositiveDefiniteError if the covariance matrix
+         * becomes no longer positive definite
+         * 
+         * may throw Mcmc::ChainFlushError if output files cannot be opened
+         */ 
         void Run();
 
     private:
@@ -81,8 +114,10 @@ namespace Mcmc {
          */
         void TrialMeanAndCovariance(std::shared_ptr<Mcmc::Point> last_point,
                 std::shared_ptr<Mcmc::Point> trial_point,
-                gsl_vector* trial_mean, gsl_matrix* trial_covariance,
-                double& trial_covariance_det, gsl_matrix* trial_covariance_inv);
+                gsl_vector* trial_mean, 
+                gsl_matrix* trial_covariance,
+                double& trial_covariance_det, 
+                gsl_matrix* trial_covariance_inv);
 
         /*
          * Calculates lambda, the annealing exponent.  It takes values other
