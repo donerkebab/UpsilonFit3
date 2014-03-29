@@ -11,6 +11,7 @@
 #include <ctime>
 
 #include <array>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -30,9 +31,9 @@
 
 namespace Mcmc {
 
-    McmcScan::McmcScan(unsigned int dimension, 
+    McmcScan::McmcScan(unsigned int dimension,
             unsigned int num_chains,
-            unsigned int max_steps, 
+            unsigned int max_steps,
             double burn_fraction)
     : dimension_(dimension),
     num_chains_(num_chains),
@@ -57,35 +58,54 @@ namespace Mcmc {
 
     McmcScan::~McmcScan() {
         // The chains are automatically fully flushed when destroyed.
+        for (int i = 0; i < chains_.size(); ++i) {
+            delete chains_[i];
+        }
+        
         gsl_rng_free(rng_);
         gsl_vector_free(last_points_mean_);
         gsl_matrix_free(last_points_covariance_);
         gsl_matrix_free(last_points_covariance_inv_);
     }
 
-    void McmcScan::Initialize() {
-        // Initialize the chains
-        InitializeChains();
+    void McmcScan::Initialize(unsigned int buffer_size,
+            std::vector<std::pair<gsl_vector*, std::string> > chains_info) {
+        // Sanity check: make sure chains haven't already been initialized
+        if (chains_.size() != 0) {
+            throw std::logic_error("chains have already been initialized");
+        }
 
         // Sanity check: require that we have the proper number of chains
-        if (chains_.size() != num_chains_) {
+        if (chains_info.size() != num_chains_) {
             throw std::invalid_argument("wrong number of chains");
         }
 
-        // Sanity check: require that each chain is seeded with a point of the
-        // proper dimension
-        for (std::vector<Mcmc::MarkovChain>::const_iterator i_chain =
-                chains_.begin(); i_chain < chains_.end(); ++i_chain) {
-            if (i_chain->last_point()->parameters()->size != dimension_) {
+        // Sanity check: require that the chain seed parameters have the proper
+        // dimension and are valid
+        for (std::vector<std::pair<gsl_vector*, std::string> >::const_iterator
+            i_chain = chains_info.begin(); i_chain < chains_info.end();
+                ++i_chain) {
+            if (i_chain->first->size != dimension_) {
                 throw std::invalid_argument("chain seed has wrong dimension");
             }
+            if (!IsValidParameters(i_chain->first)) {
+                throw std::invalid_argument("invalid chain seed parameters");
+            }
         }
+
+        // Initialize the chains
+        InitializeChains(buffer_size, chains_info);
 
         // Initialize the last points' mean, covariance
         InitializeLastPointsMeanAndCovariance();
     }
-    
+
     void McmcScan::Run() {
+        // Sanity check: make sure chains have been initialized
+        if (chains_.size() == 0) {
+            throw std::logic_error("chains have not been initialized yet");
+        }
+
         while (num_steps_ < max_steps_) {
             // Increment num_steps_ here to get the right value for Lambda()
             ++num_steps_;
@@ -93,8 +113,8 @@ namespace Mcmc {
             // Randomly choose a chain to update
             unsigned int chain_to_update = gsl_rng_uniform_int(rng_,
                     num_chains_);
-            std::shared_ptr<Mcmc::Point> last_point = 
-                    chains_[chain_to_update].last_point();
+            std::shared_ptr<Mcmc::Point> last_point =
+                    chains_[chain_to_update]->last_point();
 
             // Construct a trial point and compute the trial mean and covariance
             std::shared_ptr<Mcmc::Point> trial_point = TrialPoint(last_point);
@@ -116,7 +136,7 @@ namespace Mcmc {
                 gsl_matrix_free(last_points_covariance_inv_);
 
                 try {
-                    chains_[chain_to_update].Append(trial_point);
+                    chains_[chain_to_update]->Append(trial_point);
                 } catch (Mcmc::ChainFlushError& e) {
                     std::printf("Error flushing chain %u, will try again next time",
                             chain_to_update);
@@ -131,7 +151,7 @@ namespace Mcmc {
                 gsl_matrix_free(trial_covariance_inv);
 
                 try {
-                    chains_[chain_to_update].Append(last_point);
+                    chains_[chain_to_update]->Append(last_point);
                 } catch (Mcmc::ChainFlushError& e) {
                     std::printf("Error flushing chain %u, will try again next time",
                             chain_to_update);
@@ -140,14 +160,31 @@ namespace Mcmc {
         }
     }
 
+    void McmcScan::InitializeChains(unsigned int buffer_size,
+            std::vector<std::pair<gsl_vector*, std::string> > chains_info) {
+        for (std::vector<std::pair<gsl_vector*, std::string> >::const_iterator
+            i_chain = chains_info.begin(); i_chain < chains_info.end();
+                ++i_chain) {
+            gsl_vector* measurements = nullptr;
+            double likelihood = 0.0;
+            MeasurePoint(i_chain->first, measurements, likelihood);
+
+            std::shared_ptr<Mcmc::Point> point(
+                    new Mcmc::Point(i_chain->first, measurements, likelihood));
+
+            chains_.push_back(
+                    new Mcmc::MarkovChain(point, i_chain->second, buffer_size));
+        }
+    }
+
     void McmcScan::InitializeLastPointsMeanAndCovariance() {
         // Compute the vector mean
         last_points_mean_ = gsl_vector_calloc(dimension_);
-        for (std::vector<Mcmc::MarkovChain>::const_iterator i_chain =
+        for (std::vector<Mcmc::MarkovChain*>::const_iterator i_chain =
                 chains_.begin();
                 i_chain < chains_.end(); ++i_chain) {
             gsl_vector_add(last_points_mean_,
-                    i_chain->last_point()->parameters());
+                    (*i_chain)->last_point()->parameters());
         }
         gsl_vector_scale(last_points_mean_, 1.0 / num_chains_);
 
@@ -155,10 +192,10 @@ namespace Mcmc {
         // gsl_blas_dger: "rank-1 update (4') = (1)(2)(3)^T + (4)"
         last_points_covariance_ = gsl_matrix_calloc(dimension_, dimension_);
         gsl_vector* temp = gsl_vector_alloc(dimension_);
-        for (std::vector<Mcmc::MarkovChain>::const_iterator i_chain =
+        for (std::vector<Mcmc::MarkovChain*>::const_iterator i_chain =
                 chains_.begin();
                 i_chain < chains_.end(); ++i_chain) {
-            gsl_vector_memcpy(temp, i_chain->last_point()->parameters());
+            gsl_vector_memcpy(temp, (*i_chain)->last_point()->parameters());
             gsl_vector_sub(temp, last_points_mean_);
             gsl_blas_dger(1.0 / num_chains_, temp, temp,
                     last_points_covariance_);
@@ -247,9 +284,9 @@ namespace Mcmc {
     void McmcScan::TrialMeanAndCovariance(
             std::shared_ptr<Mcmc::Point> last_point,
             std::shared_ptr<Mcmc::Point> trial_point,
-            gsl_vector* trial_mean, 
+            gsl_vector* trial_mean,
             gsl_matrix* trial_covariance,
-            double& trial_covariance_det, 
+            double& trial_covariance_det,
             gsl_matrix* trial_covariance_inv) {
         // Calculate the trial shift
         // trial_shift = trial_parameters - last_parameters

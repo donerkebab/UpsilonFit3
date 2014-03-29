@@ -25,7 +25,12 @@
  * Users should then initialize an instance of the subclass, and then call
  * Initialize(), and then Run().  
  * 
+ * The random number generator rng_ is protected so that users may use it in
+ * their subclass, say, to initialize chains.
+ * 
  * Dev notes:
+ * * The chains are held in a vector of pointers to MarkovChain objects, because
+ *   std::vector requires the objects to be copy-constructible.
  * * I would have liked to use a std::array to hold the chains, but the size of
  *   the array is supplied by the user and not guaranteed to be known at 
  *   compile time.
@@ -42,6 +47,7 @@
 #ifndef MCMC_MCMCSCAN_H
 #define	MCMC_MCMCSCAN_H
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -63,29 +69,49 @@ namespace Mcmc {
         virtual ~McmcScan();
 
         /*
-         * Initializes the scan by initializing the chains and other starting
-         * variables.  Must be called before Run().
+         * Initializes the chains and other starting variables.
+         * 
+         * Must be supplied with the chains' initialization information in the
+         * form of pairs of seed parameters and filenames.  The GSL vectors
+         * passed in for the seed parameters are defensively copied into the 
+         * chains, and must be freed by the user.
+         * 
+         * throws std::logic_error if called more than once
          * 
          * may throw Mcmc::PositiveDefiniteError if the starting covariance 
          * matrix is not positive definite
          * 
          * may throw Mcmc::ChainFlushError if output files cannot be opened
          */
-        void Initialize();
-        
+        void Initialize(unsigned int buffer_size,
+                std::vector<std::pair<gsl_vector*, std::string> > chains_info);
+
         /*
-         * Runs the scan.  Must be called after Initialize().
+         * Runs the scan to completion unless an exception is thrown.
+         * 
+         * throws std::logic error if called before chains are initialized
          * 
          * may throw Mcmc::PositiveDefiniteError if the covariance matrix
          * becomes no longer positive definite
          * 
          * may throw Mcmc::ChainFlushError if output files cannot be opened
-         */ 
+         */
         void Run();
+
+    protected:
+        gsl_rng* rng_;
 
     private:
         McmcScan(McmcScan const& orig);
         void operator=(McmcScan const& orig);
+
+        /*
+         * Initializes the chains with the seed parameters and filenames.
+         * 
+         * throws Mcmc::ChainFlushError if output files cannot be opened
+         */
+        void InitializeChains(unsigned int buffer_size,
+                std::vector<std::pair<gsl_vector*, std::string> > chains_info);
 
         /*
          * Initializes the vector mean of the parameters of each chain's last 
@@ -114,9 +140,9 @@ namespace Mcmc {
          */
         void TrialMeanAndCovariance(std::shared_ptr<Mcmc::Point> last_point,
                 std::shared_ptr<Mcmc::Point> trial_point,
-                gsl_vector* trial_mean, 
+                gsl_vector* trial_mean,
                 gsl_matrix* trial_covariance,
-                double& trial_covariance_det, 
+                double& trial_covariance_det,
                 gsl_matrix* trial_covariance_inv);
 
         /*
@@ -148,19 +174,13 @@ namespace Mcmc {
                 gsl_vector* measurements,
                 double& likelihood) = 0;
 
-        /*
-         * Initializes the chains with initial points.
-         * (abstract)
-         */
-        virtual void InitializeChains() = 0;
 
-        std::vector<Mcmc::MarkovChain> chains_;
+        std::vector<Mcmc::MarkovChain*> chains_;
 
         unsigned int const dimension_;
         unsigned int const num_chains_;
         unsigned int const max_steps_;
         double const burn_fraction_;
-        gsl_rng* rng_;
 
         unsigned int num_steps_;
         gsl_vector* last_points_mean_;
