@@ -18,15 +18,14 @@
  *   bounds of the parameter space.
  * * MeasurePoint(), which supplies the measurements and likelihood for a given
  *   point in the parameter space.
- * * InitializeChains(), which initializes the Markov chains with seed points in
- *   the parameter space.  The number of chains must be more than the number of
- *   dimensions in the parameter space, so that the covariance matrix will be
- *   positive definite.
  * Users should then initialize an instance of the subclass, and then call
- * Initialize(), and then Run().  
+ * Initialize() with the chain initialization info, and then Run().  
  * 
  * The random number generator rng_ is protected so that users may use it in
  * their subclass, say, to initialize chains.
+ * 
+ * 
+ * 
  * 
  * Dev notes:
  * * The chains are held in a vector of pointers to MarkovChain objects, because
