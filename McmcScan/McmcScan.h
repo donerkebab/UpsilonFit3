@@ -82,8 +82,8 @@ namespace Mcmc {
          * 
          * may throw Mcmc::ChainFlushError if output files cannot be opened
          */
-        void Initialize(unsigned int buffer_size,
-                std::vector<std::pair<gsl_vector*, std::string> > chains_info);
+        void Initialize(unsigned int buffer_size, std::vector<
+                std::pair<gsl_vector const*, std::string> > chains_info);
 
         /*
          * Runs the scan to completion unless an exception is thrown.
@@ -109,8 +109,8 @@ namespace Mcmc {
          * 
          * throws Mcmc::ChainFlushError if output files cannot be opened
          */
-        void InitializeChains(unsigned int buffer_size,
-                std::vector<std::pair<gsl_vector*, std::string> > chains_info);
+        void InitializeChains(unsigned int buffer_size, std::vector<
+                std::pair<gsl_vector const*, std::string> > chains_info);
 
         /*
          * Initializes the vector mean of the parameters of each chain's last 

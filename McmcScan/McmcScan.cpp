@@ -69,7 +69,8 @@ namespace Mcmc {
     }
 
     void McmcScan::Initialize(unsigned int buffer_size,
-            std::vector<std::pair<gsl_vector*, std::string> > chains_info) {
+            std::vector<std::pair<gsl_vector const*, std::string> > chains_info)
+    {
         // Sanity check: make sure chains haven't already been initialized
         if (chains_.size() != 0) {
             throw std::logic_error("chains have already been initialized");
@@ -82,9 +83,9 @@ namespace Mcmc {
 
         // Sanity check: require that the chain seed parameters have the proper
         // dimension and are valid
-        for (std::vector<std::pair<gsl_vector*, std::string> >::const_iterator
-            i_chain = chains_info.begin(); i_chain < chains_info.end();
-                ++i_chain) {
+        for (std::vector<std::pair<gsl_vector const*, 
+                std::string> >::const_iterator i_chain = chains_info.begin(); 
+                i_chain < chains_info.end(); ++i_chain) {
             if (i_chain->first->size != dimension_) {
                 throw std::invalid_argument("chain seed has wrong dimension");
             }
@@ -161,16 +162,20 @@ namespace Mcmc {
     }
 
     void McmcScan::InitializeChains(unsigned int buffer_size,
-            std::vector<std::pair<gsl_vector*, std::string> > chains_info) {
-        for (std::vector<std::pair<gsl_vector*, std::string> >::const_iterator
-            i_chain = chains_info.begin(); i_chain < chains_info.end();
-                ++i_chain) {
+            std::vector<std::pair<gsl_vector const*, std::string> > chains_info)
+    {
+        for (std::vector<std::pair<gsl_vector const*, 
+                std::string> >::const_iterator i_chain = chains_info.begin(); 
+                i_chain < chains_info.end(); ++i_chain) {
+            gsl_vector* parameters = gsl_vector_alloc(dimension_);
+            gsl_vector_memcpy(parameters, i_chain->first);
+            
             gsl_vector* measurements = nullptr;
             double likelihood = 0.0;
-            MeasurePoint(i_chain->first, measurements, likelihood);
+            MeasurePoint(parameters, measurements, likelihood);
 
             std::shared_ptr<Mcmc::Point> point(
-                    new Mcmc::Point(i_chain->first, measurements, likelihood));
+                    new Mcmc::Point(parameters, measurements, likelihood));
 
             chains_.push_back(
                     new Mcmc::MarkovChain(point, i_chain->second, buffer_size));
