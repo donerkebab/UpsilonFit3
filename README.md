@@ -5,7 +5,15 @@ Markov chain Monte Carlo scan of the pMSSM parameter space, in order to evaluate
 
 UpsilonFit3 is written by Mike Saelim, and is a complete rewrite of the UpsilonFit2 code he wrote for [arXiv:1201.5839](http://arxiv.org/abs/1201.5839).  It is written in C++, and requires the GNU Scientific Library (GSL) and SuSpect, a FORTRAN program written to calculate SUSY spectra.  It currently uses GSL version 1.16 and SuSpect version XXXX.  Developed in NetBeans 7.4.
 
+
+
+**Interjection: You can see plots of the MCMC code at work on toy problems, in ToyScan1_plots.pdf!**
+
+
+
 The MCMC algorithm is an adaptive Metropolis-Hastings algorithm with simulated annealing, based on the work in [arXiv:hep-ph/0602187](http://arxiv.org/abs/hep-ph/0602187).  It is adaptive because the step size changes to reflect the estimated size of the posterior distribution.  Note that, while GSL has a simulated annealing package, we found it very limited.
+
+
 
 It has three main parts:
 
@@ -14,6 +22,8 @@ It has three main parts:
 2. The Pmssm package, which uses the Mcmc package to implement the scan over a subspace of the phenomenological Minimal Supersymmetric Standard Model (pMSSM) parameter space, constrained by a set of measurements made at the Large Hadron Collider (LHC) or a future linear electron-positron collider like the International Linear Collider (ILC).  Its main class, PmssmScan, inherits from Mcmc::McmcScan.  It also calculates the Upsilon parameter, defined in the SUSY-Yukawa Sum Rule ([arXiv:1004.5350](http://arxiv.org/abs/1004.5350)), for the resulting posterior distribution.
 
 3. The main UpsilonFit3 program, which instantiates class Pmssm::PmssmScan and runs the scan.
+
+It also contains the ToyScans package, which implements scans on small toy problems as tests/examples of the MCMC code at work.
 
 
 
