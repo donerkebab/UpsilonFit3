@@ -8,9 +8,8 @@
 #include "McmcScan.h"
 
 #include <cmath>
+#include <cstdio>
 #include <ctime>
-
-#include <iostream>
 
 #include <array>
 #include <memory>
@@ -109,9 +108,18 @@ namespace Mcmc {
             throw std::logic_error("chains have not been initialized yet");
         }
 
+        std::printf("\n");
+        std::printf("Beginning scan for %u steps...\n", max_steps_);
+        std::printf("\n");
+        
         while (num_steps_ < max_steps_) {
             // Increment num_steps_ here to get the right value for Lambda()
             ++num_steps_;
+            
+            if (num_steps_ % 10000) {
+                std::printf("  Step %u of %u done.\n", num_steps_, max_steps_);
+                std::printf("\n");
+            }
             
             // Randomly choose a chain to update
             unsigned int chain_to_update = gsl_rng_uniform_int(rng_,
@@ -161,6 +169,9 @@ namespace Mcmc {
                 }
             }
         }
+        
+        std::printf("Scan completed.\n");
+        std::printf("\n");
     }
 
     void McmcScan::InitializeChains(unsigned int buffer_size,
