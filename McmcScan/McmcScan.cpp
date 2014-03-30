@@ -10,6 +10,8 @@
 #include <cmath>
 #include <ctime>
 
+#include <iostream>
+
 #include <array>
 #include <memory>
 #include <stdexcept>
@@ -69,7 +71,7 @@ namespace Mcmc {
     }
 
     void McmcScan::Initialize(unsigned int buffer_size,
-            std::vector<std::pair<gsl_vector const*, std::string> > chains_info)
+            std::vector<std::pair<gsl_vector*, std::string> > chains_info)
     {
         // Sanity check: make sure chains haven't already been initialized
         if (chains_.size() != 0) {
@@ -83,7 +85,7 @@ namespace Mcmc {
 
         // Sanity check: require that the chain seed parameters have the proper
         // dimension and are valid
-        for (std::vector<std::pair<gsl_vector const*, 
+        for (std::vector<std::pair<gsl_vector*, 
                 std::string> >::const_iterator i_chain = chains_info.begin(); 
                 i_chain < chains_info.end(); ++i_chain) {
             if (i_chain->first->size != dimension_) {
@@ -110,7 +112,7 @@ namespace Mcmc {
         while (num_steps_ < max_steps_) {
             // Increment num_steps_ here to get the right value for Lambda()
             ++num_steps_;
-
+            
             // Randomly choose a chain to update
             unsigned int chain_to_update = gsl_rng_uniform_int(rng_,
                     num_chains_);
@@ -119,10 +121,10 @@ namespace Mcmc {
 
             // Construct a trial point and compute the trial mean and covariance
             std::shared_ptr<Mcmc::Point> trial_point = TrialPoint(last_point);
-            gsl_vector* trial_mean;
-            gsl_matrix* trial_covariance;
+            gsl_vector* trial_mean = nullptr;
+            gsl_matrix* trial_covariance = nullptr;
             double trial_covariance_det;
-            gsl_matrix* trial_covariance_inv;
+            gsl_matrix* trial_covariance_inv = nullptr;
             TrialMeanAndCovariance(last_point, trial_point, trial_mean,
                     trial_covariance, trial_covariance_det,
                     trial_covariance_inv);
@@ -162,9 +164,9 @@ namespace Mcmc {
     }
 
     void McmcScan::InitializeChains(unsigned int buffer_size,
-            std::vector<std::pair<gsl_vector const*, std::string> > chains_info)
+            std::vector<std::pair<gsl_vector*, std::string> > chains_info)
     {
-        for (std::vector<std::pair<gsl_vector const*, 
+        for (std::vector<std::pair<gsl_vector*, 
                 std::string> >::const_iterator i_chain = chains_info.begin(); 
                 i_chain < chains_info.end(); ++i_chain) {
             gsl_vector* parameters = gsl_vector_alloc(dimension_);
@@ -173,7 +175,7 @@ namespace Mcmc {
             gsl_vector* measurements = nullptr;
             double likelihood = 0.0;
             MeasurePoint(parameters, measurements, likelihood);
-
+            
             std::shared_ptr<Mcmc::Point> point(
                     new Mcmc::Point(parameters, measurements, likelihood));
 
@@ -289,10 +291,10 @@ namespace Mcmc {
     void McmcScan::TrialMeanAndCovariance(
             std::shared_ptr<Mcmc::Point> last_point,
             std::shared_ptr<Mcmc::Point> trial_point,
-            gsl_vector* trial_mean,
-            gsl_matrix* trial_covariance,
+            gsl_vector*& trial_mean,
+            gsl_matrix*& trial_covariance,
             double& trial_covariance_det,
-            gsl_matrix* trial_covariance_inv) {
+            gsl_matrix*& trial_covariance_inv) {
         // Calculate the trial shift
         // trial_shift = trial_parameters - last_parameters
         gsl_vector* trial_shift = gsl_vector_alloc(dimension_);
@@ -310,8 +312,8 @@ namespace Mcmc {
         std::array<gsl_vector*, 2> a;
         std::array<gsl_vector*, 2> b;
         for (int i = 0; i < 2; ++i) {
-            a[0] = gsl_vector_alloc(dimension_);
-            b[0] = gsl_vector_alloc(dimension_);
+            a[i] = gsl_vector_alloc(dimension_);
+            b[i] = gsl_vector_alloc(dimension_);
         }
         // a[0] = trial_shift/num_chains
         gsl_vector_memcpy(a[0], trial_shift);
@@ -381,7 +383,7 @@ namespace Mcmc {
                 one_plus_lambda_det);
         gsl_matrix_set(one_plus_lambda_inv, 1, 1,
                 gsl_matrix_get(one_plus_lambda, 0, 0) / one_plus_lambda_det);
-
+        
         // Update the covariance matrix
         // C' = C + a[0]*b0^T + a[1]*b[1]^T
         // gsl_blas_dger: "the rank-1 update (4') = (1)(2)(3)^T + (4)"

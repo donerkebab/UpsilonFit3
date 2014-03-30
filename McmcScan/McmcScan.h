@@ -83,7 +83,7 @@ namespace Mcmc {
          * may throw Mcmc::ChainFlushError if output files cannot be opened
          */
         void Initialize(unsigned int buffer_size, std::vector<
-                std::pair<gsl_vector const*, std::string> > chains_info);
+                std::pair<gsl_vector*, std::string> > chains_info);
 
         /*
          * Runs the scan to completion unless an exception is thrown.
@@ -106,16 +106,18 @@ namespace Mcmc {
 
         /*
          * Initializes the chains with the seed parameters and filenames.
+         * The resulting chains are stored in member variable chains_.
          * 
          * throws Mcmc::ChainFlushError if output files cannot be opened
          */
         void InitializeChains(unsigned int buffer_size, std::vector<
-                std::pair<gsl_vector const*, std::string> > chains_info);
+                std::pair<gsl_vector*, std::string> > chains_info);
 
         /*
          * Initializes the vector mean of the parameters of each chain's last 
          * point, the covariance matrix, inverse covariance matrix, and
-         * determinant of the covariance matrix.
+         * determinant of the covariance matrix.  Results are stored in the
+         * class's member variables.
          * 
          * throws Mcmc::PositiveDefiniteError if covariance matrix is not
          * positive definite
@@ -129,20 +131,27 @@ namespace Mcmc {
                 last_point);
 
         /*
-         * Calculates the mean and covariance if the trial point is accepted.
+         * Calculates the mean and covariance if the trial point were to be
+         * accepted.  Stores them in output arguments, which are also newly
+         * allocated within the method.
+         * 
          * Done by updating the last_* quantities with the new trial point,
          * without having to recalculate them from scratch.  Follows the 
          * procedure in Baltz, et al. (arXiv:hep-ph/0602187)
+         * 
+         * Inputs: last_point, trial_point
+         * Outputs: trial_mean, trial_covariance, trial_covariance_det,
+         *            trial_covariance_inv
          * 
          * throws Mcmc::PositiveDefiniteError if trial covariance matrix is not
          * positive definite
          */
         void TrialMeanAndCovariance(std::shared_ptr<Mcmc::Point> last_point,
                 std::shared_ptr<Mcmc::Point> trial_point,
-                gsl_vector* trial_mean,
-                gsl_matrix* trial_covariance,
+                gsl_vector*& trial_mean,
+                gsl_matrix*& trial_covariance,
                 double& trial_covariance_det,
-                gsl_matrix* trial_covariance_inv);
+                gsl_matrix*& trial_covariance_inv);
 
         /*
          * Calculates lambda, the annealing exponent.  It takes values other
@@ -166,11 +175,15 @@ namespace Mcmc {
 
         /*
          * Calculates the measurements and likelihood for a given set of
-         * parameters.
+         * parameters.  Stores them in output arguments.  GSL vector 
+         * measurements gets newly allocated within the method.
+         * 
+         * Input: parameters
+         * Outputs: measurements, likelihood
          * (abstract)
          */
         virtual void MeasurePoint(gsl_vector const* parameters,
-                gsl_vector* measurements,
+                gsl_vector*& measurements,
                 double& likelihood) = 0;
 
 
