@@ -116,7 +116,7 @@ namespace Mcmc {
             // Increment num_steps_ here to get the right value for Lambda()
             ++num_steps_;
             
-            if (num_steps_ % 10000) {
+            if (num_steps_ % 10000 == 0) {
                 std::printf("  Step %u of %u done.\n", num_steps_, max_steps_);
                 std::printf("\n");
             }

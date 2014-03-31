@@ -17,7 +17,6 @@
 #include <vector>
 
 #include <gsl/gsl_rng.h>
-#include <gsl/gsl_sf_exp.h>
 #include <gsl/gsl_vector.h>
 
 #include "McmcScan.h"

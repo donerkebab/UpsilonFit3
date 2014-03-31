@@ -11,6 +11,14 @@
 #include <gsl/gsl_vector.h>
 
 #include "ToyScan1.h"
+#include "ToyScan2.h"
+
+
+namespace { // unnamed namespace
+    // Forward declarations of scan functions
+    void RunScan1();
+    void RunScan2();
+}
 
 /*
  * Runs the selected toy scan.
@@ -26,12 +34,25 @@ int main(int argc, char** argv) {
     }
 
     int scan_selection = std::atoi(argv[1]);
-    if (scan_selection <= 0 || scan_selection >= 2) {
-        printf("scan selected does not exist");
-        exit(1);
+
+    switch (scan_selection) {
+        case 1:
+            ::RunScan1();
+            break;
+        case 2:
+            ::RunScan2();
+            break;
+        default:
+            printf("scan selected does not exist");
     }
 
-    if (scan_selection == 1) {
+    return 0;
+}
+
+
+namespace {
+
+    void RunScan1() {
         unsigned int num_chains = 10;
         unsigned int buffer_size = 25;
         unsigned int max_steps = 10000;
@@ -59,6 +80,32 @@ int main(int argc, char** argv) {
         gsl_vector_free(uncertainties);
     }
 
-    return 0;
+    void RunScan2() {
+        unsigned int num_chains = 10;
+        unsigned int buffer_size = 20;
+        unsigned int max_steps = 100000;
+        double burn_fraction = 0.1;
+
+        gsl_vector* center_point = gsl_vector_alloc(2);
+        gsl_vector_set(center_point, 0, 2);
+        gsl_vector_set(center_point, 1, 1);
+
+        double radius = 3;
+        double uncertainty = 0.3;
+
+        ToyScans::ToyScan2 scan(num_chains, max_steps, burn_fraction,
+                center_point, radius, uncertainty);
+
+        scan.Initialize(buffer_size, scan.GenerateChainSeeds(num_chains));
+
+        scan.Run();
+
+        // Memory cleanup
+        gsl_vector_free(center_point);
+    }
+
+
+
+
 }
 

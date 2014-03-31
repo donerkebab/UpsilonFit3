@@ -26,8 +26,9 @@
         <runcommandpicklist>
           <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
           <runcommandpicklistitem>"${OUTPUT_PATH}" 1</runcommandpicklistitem>
+          <runcommandpicklistitem>"${OUTPUT_PATH}" 2</runcommandpicklistitem>
         </runcommandpicklist>
-        <runcommand>"${OUTPUT_PATH}" 1</runcommand>
+        <runcommand>"${OUTPUT_PATH}" 2</runcommand>
         <rundir>/Users/donerkebab/Desktop/work/01-UpsilonFit/UpsilonFit3/ToyScans/chains</rundir>
         <buildfirst>true</buildfirst>
         <terminal-type>0</terminal-type>
